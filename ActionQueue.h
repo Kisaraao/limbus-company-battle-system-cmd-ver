@@ -415,7 +415,7 @@ public:
 		std::cout << "\n";
 		//target.health -= attacker.skill.Damage;
 
-		std::cout << u8"最终造成了 " << attacker.skill.Damage << u8" 点伤害。" << "\n\n";
+		std::cout << u8"[日志] 技能攻击部分最终造成了 " << attacker.skill.Damage << u8" 点伤害。" << "\n\n";
 	}
 
 	void setColor(int color) {

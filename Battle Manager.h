@@ -39,7 +39,6 @@ public:
 			DamageEventData* Data = static_cast<DamageEventData*>(data);
 			BattleCharacter* target = nullptr;
 
-			Data->attacker->skill.Damage += Data->target->rupture.x;
 			Data->target->handleRupture();
 			Data->target->handleSink();
 
