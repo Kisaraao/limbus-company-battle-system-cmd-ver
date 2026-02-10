@@ -1,0 +1,29 @@
+<Character>
+    <Name val="测试"/>
+    <Tag val="测试角色"/>
+    <Level val="100"/>
+    <Health Min="0" Max="10000"/>
+    <Sanity Min="-45" Max="45"/>
+    <Speed Min="1" Max="1"/>
+    <Resist Slash="1.0" Stab="1.0" Strike="1.0"/>
+    <Confusion val="0.75"/>
+    <Confusion val="0.5"/>
+    <Confusion val="0.25"/>
+    <Skill>
+        <Count val="1"/>
+        <Name val="一键上5种特效"/>
+        <Attack_Level val="0"/>
+        <Base val="20"/>
+        <Change val="20"/>
+        <Attack_Type val="斩击"/>
+        <Sin_Type val="暴怒"/>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="burn" mode="add" x="50" y="50"/>
+            <Effect target="enemy" type="bleed" mode="add" x="50" y="50"/>
+            <Effect target="enemy" type="rupture" mode="add" x="50" y="50"/>
+            <Effect target="enemy" type="sink" mode="add" x="50" y="50"/>
+            <Effect target="enemy" type="tremor" mode="add" x="50" y="50"/>
+        </Coin>
+    </Skill>
+
+</Character>

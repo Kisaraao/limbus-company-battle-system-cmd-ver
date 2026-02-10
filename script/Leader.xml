@@ -1,0 +1,12 @@
+<Leader>
+    <!-- 考虑替换为 c++17 filesystem读取 -->
+    <!-- 原版 -->
+    <Character path="albina"/>
+    <Character path="valencina"/>
+    <!-- 测试 -->
+    <Character path="test"/>
+    <Battle>
+        <Player name="albina"/>
+        <Enemy name="valencina"/>
+    </Battle>
+</Leader>
