@@ -9,6 +9,8 @@
 #include "Vector2.h"
 #include "EventBus.h"
 
+#pragma execution_character_set("utf-8")
+
 enum class AttackType
 {
 	None,
@@ -18,17 +20,17 @@ enum class AttackType
 };
 
 std::unordered_map<std::string, AttackType> string_to_attacktype = { 
-	{ u8"斩击", AttackType::Slash },
-	{ u8"穿刺", AttackType::Stab },
-	{ u8"打击", AttackType::Strike },
-	{ u8"无", AttackType::None }
+	{ "斩击", AttackType::Slash },
+	{ "穿刺", AttackType::Stab },
+	{ "打击", AttackType::Strike },
+	{ "无", AttackType::None }
 };
 
 std::unordered_map<AttackType, std::string> attacktype_to_string = {
-	{ AttackType::Slash, u8"斩击" },
-	{ AttackType::Stab, u8"穿刺" },
-	{ AttackType::Strike, u8"打击" },
-	{ AttackType::None, u8"无" }
+	{ AttackType::Slash, "斩击" },
+	{ AttackType::Stab, "穿刺" },
+	{ AttackType::Strike, "打击" },
+	{ AttackType::None, "无" }
 };
 
 enum class SinType
@@ -44,25 +46,25 @@ enum class SinType
 };
 
 std::unordered_map<std::string, SinType> string_to_sintype = {
-	{ u8"无", SinType::None },
-	{ u8"傲慢", SinType::Pride },
-	{ u8"暴怒", SinType::Wrath },
-	{ u8"色欲", SinType::Lust },
-	{ u8"怠惰", SinType::Sloth },
-	{ u8"暴食", SinType::Gluttony },
-	{ u8"嫉妒", SinType::Envy },
-	{ u8"忧郁", SinType::Melancholy }
+	{ "无", SinType::None },
+	{ "傲慢", SinType::Pride },
+	{ "暴怒", SinType::Wrath },
+	{ "色欲", SinType::Lust },
+	{ "怠惰", SinType::Sloth },
+	{ "暴食", SinType::Gluttony },
+	{ "嫉妒", SinType::Envy },
+	{ "忧郁", SinType::Melancholy }
 };
 
 std::unordered_map<SinType, std::string> sintype_to_string = {
-	{ SinType::None, u8"无" },
-	{ SinType::Pride, u8"傲慢" },
-	{ SinType::Wrath, u8"暴怒" },
-	{ SinType::Lust, u8"色欲" },
-	{ SinType::Sloth, u8"怠惰" },
-	{ SinType::Gluttony, u8"暴食" },
-	{ SinType::Envy, u8"嫉妒" },
-	{ SinType::Melancholy, u8"忧郁" }
+	{ SinType::None, "无" },
+	{ SinType::Pride, "傲慢" },
+	{ SinType::Wrath, "暴怒" },
+	{ SinType::Lust, "色欲" },
+	{ SinType::Sloth, "怠惰" },
+	{ SinType::Gluttony, "暴食" },
+	{ SinType::Envy, "嫉妒" },
+	{ SinType::Melancholy, "忧郁" }
 };
 
 struct Effect
@@ -80,8 +82,8 @@ public:
 
 	bool is_Broke = false;
 	bool current_Face;
-	int Point;
-	int Damage;
+	float Point;
+	float Damage;
 
 	std::vector<Effect> effects; // 效果
 
@@ -103,7 +105,7 @@ public:
 				else {//破碎红币 反面	□ 4
 					setcolor(8);
 				}
-				std::cout << u8"□";
+				std::cout << "□";
 			}
 			else {
 				if (current_Face)//红币 正面		■ 12
@@ -113,7 +115,7 @@ public:
 				else {//红币 反面		■ 4
 					setcolor(8);
 				}
-				std::cout << u8"■";
+				std::cout << "■";
 			}
 		}
 		else
@@ -121,7 +123,7 @@ public:
 			if (is_Broke)//破碎普通硬币	× 8
 			{
 				setcolor(8);
-				std::cout << u8"×";
+				std::cout << "×";
 			}
 			else {
 				if (current_Face)//普通硬币 正面	● 14
@@ -131,14 +133,14 @@ public:
 				else {//普通硬币 反面	● 6
 					setcolor(8);
 				}
-				std::cout << u8"●";
+				std::cout << "●";
 			}
 		}
 		setcolor(8);
 	}
 
 	bool isEffectContain(const std::string& str) {
-		std::cout << u8"[日志] " << u8"Coin::isEffectContain 检测 " << str << u8"是否存在\n";
+		std::cout << "[日志] " << "Coin::isEffectContain 检测 " << str << "是否存在\n";
 		for (auto& ptr : effects)
 		{
 			if (ptr.type == str)
@@ -187,6 +189,19 @@ public:
 		}
 		return false;
 	}
+
+	bool destoryFrontCoin() {
+		for (auto& ptr : Coin) {
+			if (!ptr.is_Broke)
+			{
+				ptr.is_Broke = true;
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 };
 
 enum class Status
@@ -241,13 +256,7 @@ public:
 	}
 
 	void setCurrentSkill(int index) {
-		skill.Name = Data->Skill_List[index].Name;
-		skill.Attack_Level = Data->Skill_List[index].Attack_Level;
-		skill.Base = Data->Skill_List[index].Base;
-		skill.Change = Data->Skill_List[index].Change;
-		skill.Attack_Type = Data->Skill_List[index].Attack_Type;
-		skill.Sin_Type = Data->Skill_List[index].Sin_Type;
-		skill.Coin = Data->Skill_List[index].Coin;
+		skill = Skill(Data->Skill_List[index]);
 	}
 
 	bool checkConfusion() {
@@ -304,7 +313,7 @@ public:
 		else if (sanity < Data->Sanity.x)
 		{
 			sanity = Data->Sanity.x;
-			std::cout << u8"[日志] " << Data->Name << u8"陷入了恐慌。\n";
+			std::cout << "[日志] " << Data->Name << "陷入了恐慌。\n";
 			sanity = 0;
 			addSink(Vector2(0, 10));
 		}
@@ -346,6 +355,7 @@ public:
 	std::random_device rd;
 	std::mt19937 random = std::mt19937(rd());
 	std::bernoulli_distribution sanity_rd;
+	std::bernoulli_distribution breath_rd;
 	std::uniform_int_distribution<int> speed_rd;
 	std::discrete_distribution<int> weight_rd;
 
@@ -401,26 +411,31 @@ public:
 		checkOver(burn);
 		keepAble(burn);
 	}
-	void handleBurn() {
+	int handleBurn() {
+		int damage = 0;
 		if (burn.y != 0)
 		{
 			--burn.y;
 			addHealth(-burn.x);
-			//health -= burn.x;
-			std::cout << u8"[日志] " << Data->Name << u8" 受到 " << burn.x << u8" 点烧伤伤害" << u8" 还剩 " << burn.y << u8" 层烧伤层数。" << "\n";
+			std::cout << "[日志] " << Data->Name << " 受到 " << burn.x << " 点烧伤伤害" << " 还剩 " << burn.y << " 层烧伤层数。" << "\n";
+			damage = -burn.x;
 			if (burn.y == 0)
 			{
 				burn.x = 0;
 			}
 		}
+		return damage;
 	}
-	void burnExplode() {
+	int burnExplode() {
+		int damage = 0;
 		if (burn.x != 0 && burn.y != 0)
 		{
 			addHealth(-(burn.y * burn.x));
-			std::cout << u8"[日志] " << Data->Name << u8" 被 烧伤引爆 受到 " << burn.y * burn.x << u8" 点烧伤伤害。\n";
+			std::cout << "[日志] " << Data->Name << " 被 烧伤引爆 受到 " << burn.y * burn.x << " 点烧伤伤害。\n";
+			damage = burn.y * burn.x;
 			burn = { 0,0 };
 		}
+		return damage;
 	}
 
 	Vector2 bleed = { 0, 0 };
@@ -429,13 +444,14 @@ public:
 		checkOver(bleed);
 		keepAble(bleed);
 	}
-	void handleBleed() {
+	int handleBleed() {
+		int damage = 0;
 		if (bleed.y > 0)
 		{
 			--bleed.y;
 			addHealth(-bleed.x);
-			//health -= bleed.x;
-			std::cout << u8"[日志] " << Data->Name << u8" 受到 " << bleed.x << u8" 点流血伤害" << u8" 还剩 " << bleed.y << u8" 层流血层数。" << "\n";
+			std::cout << "[日志] " << Data->Name << " 受到 " << bleed.x << " 点流血伤害" << " 还剩 " << bleed.y << " 层流血层数。" << "\n";
+			damage = bleed.x;
 			if (bleed.y == 0)
 			{
 				bleed.x = 0;
@@ -445,6 +461,7 @@ public:
 		{
 			bleed = { 0,0 };
 		}
+		return damage;
 	}
 
 	Vector2 rupture = { 0, 0 };
@@ -453,13 +470,14 @@ public:
 		checkOver(rupture);
 		keepAble(rupture);
 	}
-	void handleRupture() {
+	int handleRupture() {
+		int damage = 0;
 		if (rupture.y > 0)
 		{
 			--rupture.y;
 			addHealth(-rupture.x);
-			//health -= rupture.x;
-			std::cout << u8"[日志] " << Data->Name << u8" 受到 " << rupture.x << u8" 点破裂伤害" << u8" 还剩 " << rupture.y << u8" 层破裂层数。" << "\n";
+			std::cout << "[日志] " << Data->Name << " 受到 " << rupture.x << " 点破裂伤害" << " 还剩 " << rupture.y << " 层破裂层数。" << "\n";
+			damage = rupture.x;
 			if (rupture.y == 0)
 			{
 				rupture.x = 0;
@@ -469,6 +487,7 @@ public:
 		{
 			rupture = { 0,0 };
 		}
+		return damage;
 	}
 
 	Vector2 sink = { 0, 0 };
@@ -482,7 +501,7 @@ public:
 		{
 			--sink.y;
 			addSanity(-sink.x);
-			std::cout << u8"[日志] " << Data->Name << u8" 受到 " << sink.x << u8" 点沉沦理智降低" << u8" 还剩 " << sink.y << u8" 层沉沦层数。" << "\n";
+			std::cout << "[日志] " << Data->Name << " 受到 " << sink.x << " 点沉沦理智降低" << " 还剩 " << sink.y << " 层沉沦层数。" << "\n";
 			if (sink.y == 0)
 			{
 				sink.x = 0;
@@ -500,18 +519,20 @@ public:
 		checkOver(tremor);
 		keepAble(tremor);
 	}
-	void handleTremor() {
+	int handleTremor() {
+		int damage = 0;
 		if (tremor.y > 0)
 		{
 			--tremor.y;
 			if (confusion.empty())
 			{
 				addHealth(-(tremor.x / 2));
-				std::cout << u8"[日志] " << Data->Name << u8"被 震颤引爆 受到 " << (tremor.x / 2) << u8" 点震颤爆发伤害" << u8" 还剩 " << tremor.y << u8" 层震颤层数。" << "\n";
+				std::cout << "[日志] " << Data->Name << " 被 震颤引爆 受到 " << (tremor.x / 2) << " 点震颤爆发伤害" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
+				damage = tremor.x / 2;
 			}
 			else {
 				confusion.front() += static_cast<float>(tremor.x / Data->Health.y);
-				std::cout << u8"[日志] " << Data->Name << u8"被 震颤引爆 受到 " << tremor.x << u8" 点混乱阈值前移" << u8" 还剩 " << tremor.y << u8" 层震颤层数。" << "\n";
+				std::cout << "[日志] " << Data->Name << " 被 震颤引爆 受到 " << tremor.x << " 点混乱阈值前移" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
 			}
 			if (tremor.y == 0)
 			{
@@ -522,5 +543,34 @@ public:
 		{
 			tremor = { 0,0 };
 		}
+		return damage;
+	}
+
+	Vector2 breath = { 0,0 };
+	void addBreath(const Vector2& vec) {
+		breath += vec;
+		checkOver(breath);
+		keepAble(breath);
+	}
+	bool handleBreath() {
+		if (breath.x != 0 && breath.y != 0)
+		{
+			if (breath.x * 0.05 > 1)
+			{
+				breath_rd.param(std::bernoulli_distribution::param_type(1));
+			}
+			else
+			{
+				breath_rd.param(std::bernoulli_distribution::param_type(breath.x * 0.05));
+			}
+			if (breath_rd(random)) 
+			{
+				--breath.y;
+				std::cout << "[日志] " << Data->Name << " 造成暴击 还剩 " << breath.y << " 层呼吸法层数。" << "\n";
+				return true;
+			}
+			else { return false; }
+		}
+		return false;
 	}
 };

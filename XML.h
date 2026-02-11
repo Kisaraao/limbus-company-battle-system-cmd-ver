@@ -2,10 +2,11 @@
 #include <iostream>
 #include <memory>
 #include "pugixml.hpp"
-#include "StringUtils.h"
 #include "Character.h"
 #include "Character Pool.h"
 #include "Vector2.h"
+
+#pragma execution_character_set("utf-8")
 
 class CharacterXML
 {

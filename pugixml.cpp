@@ -3684,7 +3684,7 @@ PUGI_IMPL_NS_BEGIN
 		return (sizeof(wchar_t) == 2 && static_cast<unsigned int>(static_cast<uint16_t>(data[length - 1]) - 0xD800) < 0x400) ? length - 1 : length;
 	}
 
-	PUGI_IMPL_FN size_t convert_buffer_output(char_t* r_char, uint8_t* r_u8, uint16_t* r_u16, uint32_t* r_u32, const char_t* data, size_t length, xml_encoding encoding)
+	PUGI_IMPL_FN size_t convert_buffer_output(char_t* r_char, uint8_t* r_, uint16_t* r_u16, uint32_t* r_u32, const char_t* data, size_t length, xml_encoding encoding)
 	{
 		// only endian-swapping is required
 		if (need_endian_swap_utf(encoding, get_wchar_encoding()))
@@ -3696,7 +3696,7 @@ PUGI_IMPL_NS_BEGIN
 
 		// convert to utf8
 		if (encoding == encoding_utf8)
-			return convert_buffer_output_generic(r_u8, data, length, wchar_decoder(), utf8_writer());
+			return convert_buffer_output_generic(r_, data, length, wchar_decoder(), utf8_writer());
 
 		// convert to utf16
 		if (encoding == encoding_utf16_be || encoding == encoding_utf16_le)
@@ -3716,7 +3716,7 @@ PUGI_IMPL_NS_BEGIN
 
 		// convert to latin1
 		if (encoding == encoding_latin1)
-			return convert_buffer_output_generic(r_u8, data, length, wchar_decoder(), latin1_writer());
+			return convert_buffer_output_generic(r_, data, length, wchar_decoder(), latin1_writer());
 
 		assert(false && "Invalid encoding"); // unreachable
 		return 0;
@@ -3738,7 +3738,7 @@ PUGI_IMPL_NS_BEGIN
 		return length;
 	}
 
-	PUGI_IMPL_FN size_t convert_buffer_output(char_t* /* r_char */, uint8_t* r_u8, uint16_t* r_u16, uint32_t* r_u32, const char_t* data, size_t length, xml_encoding encoding)
+	PUGI_IMPL_FN size_t convert_buffer_output(char_t* /* r_char */, uint8_t* r_, uint16_t* r_u16, uint32_t* r_u32, const char_t* data, size_t length, xml_encoding encoding)
 	{
 		if (encoding == encoding_utf16_be || encoding == encoding_utf16_le)
 		{
@@ -3755,7 +3755,7 @@ PUGI_IMPL_NS_BEGIN
 		}
 
 		if (encoding == encoding_latin1)
-			return convert_buffer_output_generic(r_u8, data, length, utf8_decoder(), latin1_writer());
+			return convert_buffer_output_generic(r_, data, length, utf8_decoder(), latin1_writer());
 
 		assert(false && "Invalid encoding"); // unreachable
 		return 0;
@@ -3790,11 +3790,11 @@ PUGI_IMPL_NS_BEGIN
 			else
 			{
 				// convert chunk
-				size_t result = convert_buffer_output(scratch.data_char, scratch.data_u8, scratch.data_u16, scratch.data_u32, data, size, encoding);
+				size_t result = convert_buffer_output(scratch.data_char, scratch.data_, scratch.data_u16, scratch.data_u32, data, size, encoding);
 				assert(result <= sizeof(scratch));
 
 				// write data
-				writer.write(scratch.data_u8, result);
+				writer.write(scratch.data_, result);
 			}
 		}
 
@@ -3965,7 +3965,7 @@ PUGI_IMPL_NS_BEGIN
 
 		union
 		{
-			uint8_t data_u8[4 * bufcapacity];
+			uint8_t data_[4 * bufcapacity];
 			uint16_t data_u16[2 * bufcapacity];
 			uint32_t data_u32[bufcapacity];
 			char_t data_char[bufcapacity];

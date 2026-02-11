@@ -18,6 +18,7 @@
         <Attack_Type val="斩击"/>
         <Sin_Type val="暴怒"/>
         <Coin type="Unbreakable">
+            <Effect target="self" type="breath" mode="add" x="50" y="50"/>
             <Effect target="enemy" type="burn" mode="add" x="50" y="50"/>
             <Effect target="enemy" type="bleed" mode="add" x="50" y="50"/>
             <Effect target="enemy" type="rupture" mode="add" x="50" y="50"/>
