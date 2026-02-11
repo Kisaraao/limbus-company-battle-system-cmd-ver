@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 
+#include "ConsoleUtils.h"
 #include "Vector2.h"
 #include "Character.h"
 #include "Character Pool.h"

@@ -8,44 +8,26 @@
 #include <functional>
 #include "Vector2.h"
 #include "EventBus.h"
+#include "ConsoleUtils.h"
+#include "Type.h"
 
 #pragma execution_character_set("utf-8")
 
-enum class AttackType
-{
-	None,
-	Slash,
-	Stab,
-	Strike
-};
-
-std::unordered_map<std::string, AttackType> string_to_attacktype = { 
+inline std::unordered_map<std::string, AttackType> string_to_attacktype = {
 	{ "斩击", AttackType::Slash },
 	{ "穿刺", AttackType::Stab },
 	{ "打击", AttackType::Strike },
 	{ "无", AttackType::None }
 };
 
-std::unordered_map<AttackType, std::string> attacktype_to_string = {
+inline std::unordered_map<AttackType, std::string> attacktype_to_string = {
 	{ AttackType::Slash, "斩击" },
 	{ AttackType::Stab, "穿刺" },
 	{ AttackType::Strike, "打击" },
 	{ AttackType::None, "无" }
 };
 
-enum class SinType
-{
-	None,
-	Pride,
-	Wrath,
-	Lust,
-	Sloth,
-	Gluttony,
-	Envy,
-	Melancholy
-};
-
-std::unordered_map<std::string, SinType> string_to_sintype = {
+inline std::unordered_map<std::string, SinType> string_to_sintype = {
 	{ "无", SinType::None },
 	{ "傲慢", SinType::Pride },
 	{ "暴怒", SinType::Wrath },
@@ -56,7 +38,7 @@ std::unordered_map<std::string, SinType> string_to_sintype = {
 	{ "忧郁", SinType::Melancholy }
 };
 
-std::unordered_map<SinType, std::string> sintype_to_string = {
+inline std::unordered_map<SinType, std::string> sintype_to_string = {
 	{ SinType::None, "无" },
 	{ SinType::Pride, "傲慢" },
 	{ SinType::Wrath, "暴怒" },
@@ -93,27 +75,27 @@ public:
 
 public:
 
-	void drawCoin(std::function<void(int num)> setcolor) {
+	void drawCoin() {
 		if (Type == "Unbreakable")
 		{
 			if (is_Broke)
 			{
 				if (current_Face)//破碎红币 正面	□ 12
 				{
-					setcolor(12);
+					setColor(12);
 				}
 				else {//破碎红币 反面	□ 4
-					setcolor(8);
+					setColor(8);
 				}
 				std::cout << "□";
 			}
 			else {
 				if (current_Face)//红币 正面		■ 12
 				{
-					setcolor(12);
+					setColor(12);
 				}
 				else {//红币 反面		■ 4
-					setcolor(8);
+					setColor(8);
 				}
 				std::cout << "■";
 			}
@@ -122,21 +104,21 @@ public:
 		{
 			if (is_Broke)//破碎普通硬币	× 8
 			{
-				setcolor(8);
+				setColor(8);
 				std::cout << "×";
 			}
 			else {
 				if (current_Face)//普通硬币 正面	● 14
 				{
-					setcolor(14);
+					setColor(14);
 				}
 				else {//普通硬币 反面	● 6
-					setcolor(8);
+					setColor(8);
 				}
 				std::cout << "●";
 			}
 		}
-		setcolor(8);
+		setColor(8);
 	}
 
 	bool isEffectContain(const std::string& str) {

@@ -3,13 +3,14 @@
 #include <queue>
 #include "Character.h"
 #include "EventBus.h"
+#include "ConsoleUtils.h"
 
 #pragma execution_character_set("utf-8")
 
 enum class ActionType
 {
-	Combat,		//拼点
-	Unilateral,	//单方面攻击
+	Combat,		// 拼点
+	Unilateral,	// 单方面攻击
 };
 
 struct Action
@@ -39,7 +40,6 @@ public:
 
 	void addAction(ActionType type, BattleCharacter& a, BattleCharacter& b, float priority) {
 		//std::cout << "【日志】 " << "调用ActionQueue::addAction" << "\n";
-		//std::cout << (int)type << " " << a.Data->Name << " " << b.Data->Name << " " << priority << "\n";
 		Action action;
 		action.action_type = type;
 		action.priority = priority;
@@ -97,13 +97,13 @@ public:
 	}
 
 	void initNum(BattleCharacter& ch) {
-		//初始化coin的Point, Damage
+		// 初始化coin的Point, Damage
 		for (auto& ptr : ch.skill.Coin)
 		{
 			ptr.Point = 0;
 			ptr.Damage = 0;
 		}
-		//初始化skill的point, damage
+		// 初始化skill的point, damage
 		ch.skill.Damage = 0;
 		ch.skill.Point = ch.skill.Base;
 	}
@@ -119,19 +119,19 @@ public:
 			do
 			{
 
-				//遍历 a
+				// 遍历 a
 				rollEachCoin(a);
 				damage_event_data.attacker = &a;
 				damage_event_data.target = &b;
 				EventBus::get().dispatch(BattleEvent::rollCoin, &damage_event_data);
 
-				//遍历 b
+				// 遍历 b
 				rollEachCoin(b);
 				damage_event_data.attacker = &b;
 				damage_event_data.target = &a;
 				EventBus::get().dispatch(BattleEvent::rollCoin, &damage_event_data);
 
-				//计算 a 点数
+				// 计算 a 点数
 				a.skill.Point = a.skill.Base;
 				if (isLevelDiff(a, b))
 				{
@@ -149,9 +149,9 @@ public:
 					}
 				}
 
-				//计算 b 点数
+				// 计算 b 点数
 				b.skill.Point = b.skill.Base;
-				//等压
+				// 等压
 				if (isLevelDiff(b, a))
 				{
 					b.skill.Point += static_cast<int>((b.skill.Attack_Level - a.skill.Attack_Level) / 3);
@@ -195,7 +195,7 @@ public:
 	}
 
 	void rollEachCoin(BattleCharacter& ch) {
-		//遍历
+		// 遍历
 		for (size_t i = 0; i < ch.skill.Coin.size(); i++)
 		{
 			if (!ch.skill.Coin[i].is_Broke)  // 未破碎的普通硬币
@@ -206,18 +206,15 @@ public:
 	}
 
 	void printEachCoin(Skill& skill) {
-		//打印硬币
+		// 打印硬币
 		for (auto& ptr : skill.Coin)
 		{
-			ptr.drawCoin([&](int color) {
-				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, color);
-				});
+			ptr.drawCoin();
 		}
 	}
 
 	void printEachDamage(BattleCharacter& ch) {
-		//打印伤害
+		// 打印伤害
 		std::cout << "\n";
 		for (size_t i = 0; i < ch.skill.Coin.size(); i++)
 		{
@@ -266,7 +263,7 @@ public:
 		data.add_2 = &add_2;
 		data.total_damage = &total_damage;
 
-		//遍历
+		// 遍历每个硬币
 		for (size_t i = 0; i < attacker.skill.Coin.size(); i++)
 		{
 			data.coin = &attacker.skill.Coin[i];
@@ -323,12 +320,13 @@ public:
 				total_damage += round(attacker.skill.Coin[i].Damage);
 
 				EventBus::get().dispatch(BattleEvent::Damage, &data);
+
+				std::cout << "\n";
 			}
 
 			// 广播事件 伤害后
 			EventBus::get().dispatch(BattleEvent::AfterDamage, &data);
 
-			std::cout << "\n";
 			Sleep(150);
 		}
 
@@ -336,43 +334,6 @@ public:
 		printEachDamage(attacker);
 
 		std::cout << "\n[日志] 技能攻击部分最终造成了 " << total_damage << " 点伤害。" << "\n\n";
-	}
-
-	void setColor(int color) {
-		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(hConsole, color);
-	}
-	void setSinColor(const SinType& sintype) {
-		switch (sintype)
-		{
-		case SinType::None:
-			setColor(8);
-			break;
-		case SinType::Pride:
-			setColor(1);
-			break;
-		case SinType::Wrath:
-			setColor(4);
-			break;
-		case SinType::Lust:
-			setColor(12);
-			break;
-		case SinType::Sloth:
-			setColor(6);
-			break;
-		case SinType::Gluttony:
-			setColor(10);
-			break;
-		case SinType::Envy:
-			setColor(5);
-			break;
-		case SinType::Melancholy:
-			setColor(3);
-			break;
-		default:
-			setColor(15);
-			break;
-		}
 	}
 
 private:

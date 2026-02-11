@@ -8,6 +8,7 @@
 #include "Character.h"
 #include "ActionQueue.h"
 #include "EventBus.h"
+#include "ConsoleUtils.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -130,10 +131,7 @@ public:
 			});
 
 		EventBus::get().subscribe(BattleEvent::Critical, [this](void* data) {
-			DamageEventData* Data = static_cast<DamageEventData*>(data);
-			setColor(15);
 			std::cout << "[日志] " << "暴击！\n";
-			setColor(8);
 			});
 	}
 	~BattleManager() = default;
@@ -406,43 +404,6 @@ public:
 		}
 		std::cout << "\n\n";
 		setColor(8);
-	}
-
-	void setColor(int color) {
-		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(hConsole, color);
-	}
-	void setSinColor(const SinType& sintype) {
-		switch (sintype)
-		{
-		case SinType::None:
-			setColor(8);
-			break;
-		case SinType::Pride:
-			setColor(1);
-			break;
-		case SinType::Wrath:
-			setColor(4);
-			break;
-		case SinType::Lust:
-			setColor(12);
-			break;
-		case SinType::Sloth:
-			setColor(6);
-			break;
-		case SinType::Gluttony:
-			setColor(10);
-			break;
-		case SinType::Envy:
-			setColor(5);
-			break;
-		case SinType::Melancholy:
-			setColor(3);
-			break;
-		default:
-			setColor(15);
-			break;
-		}
 	}
 
 private:
