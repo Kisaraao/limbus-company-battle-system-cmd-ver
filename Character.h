@@ -241,13 +241,27 @@ public:
 		skill = Skill(Data->Skill_List[index]);
 	}
 
+	void handleConfusion() {
+		if (status == Status::confusion)
+		{
+			confusion_round++;
+			if (confusion_round == 2)
+			{
+				confusion_round = 0;
+				status = Status::normal;
+			}
+		}
+	}
 	bool checkConfusion() {
 		if (confusion.empty()) {
 			return false;
 		}
 		if (health <= Data->Health.y * confusion.front())
 		{
-			//std::cout << "[事件] " << Data->Name << " 陷入了混乱！\n";
+			std::cout << "[日志] " << Data->Name;
+			setColor(6);
+			std::cout << " 陷入了混乱！\n\n";
+			setColor(8);
 			confusion.pop();
 			status = Status::confusion;
 			return true;
@@ -348,10 +362,12 @@ public:
 	int weight;
 	int choice;
 	Status status = Status::normal;
-	std::queue<float> confusion;
 	int health;
 	int sanity;
 	int speed;
+
+	std::queue<float> confusion;
+	int confusion_round = 0;
 
 public:
 	// 效果
@@ -412,9 +428,9 @@ public:
 		int damage = 0;
 		if (burn.x != 0 && burn.y != 0)
 		{
-			addHealth(-(burn.y * burn.x));
-			std::cout << "[日志] " << Data->Name << " 被 烧伤引爆 受到 " << burn.y * burn.x << " 点烧伤伤害。\n";
-			damage = burn.y * burn.x;
+			damage = round(burn.y * burn.x);
+			std::cout << "[日志] " << Data->Name << " 受到 " << damage << " 点烧伤伤害。\n";
+			addHealth(-damage);
 			burn = { 0,0 };
 		}
 		return damage;
@@ -494,6 +510,29 @@ public:
 			sink = { 0,0 };
 		}
 	}
+	int sinkExplode() {
+		int damage = 0;
+		int san_damage = 0;
+		if (sink.x != 0 && sink.y != 0)
+		{
+			san_damage = sink.y * sink.x;
+			if (san_damage > sanity - Data->Sanity.x)
+			{
+				damage = round(san_damage - (sanity - Data->Sanity.x));
+				san_damage = sanity - Data->Sanity.x;
+
+				addSanity(-(sanity - Data->Sanity.x));
+				addHealth(-damage);
+			}
+			else
+			{
+				addSanity(-san_damage);
+			}
+			std::cout << "[日志] " << Data->Name << " 受到 " << san_damage << " 点理智伤害与 " << damage << " 点的溢出转换伤害。\n";
+			sink = { 0,0 };
+		}
+		return damage;
+	}
 
 	Vector2 tremor = { 0, 0 };
 	void addTremor(const Vector2& vec) {
@@ -508,13 +547,13 @@ public:
 			--tremor.y;
 			if (confusion.empty())
 			{
-				addHealth(-(tremor.x / 2));
-				std::cout << "[日志] " << Data->Name << " 被 震颤引爆 受到 " << (tremor.x / 2) << " 点震颤爆发伤害" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
-				damage = tremor.x / 2;
+				damage = round(tremor.x / 2);
+				std::cout << "[日志] " << Data->Name << " 受到 " << damage << " 点震颤爆发伤害" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
+				addHealth(-damage);
 			}
 			else {
 				confusion.front() += static_cast<float>(tremor.x / Data->Health.y);
-				std::cout << "[日志] " << Data->Name << " 被 震颤引爆 受到 " << tremor.x << " 点混乱阈值前移" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
+				std::cout << "[日志] " << Data->Name << " 受到 " << tremor.x << " 点混乱阈值前移" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
 			}
 			if (tremor.y == 0)
 			{

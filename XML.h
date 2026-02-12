@@ -75,6 +75,7 @@ public:
 			skill.Attack_Type = string_to_attacktype.find(skl.child("Attack_Type").attribute("val").as_string())->second;
 			// ×ïÄõÀàÐÍ
 			skill.Sin_Type = string_to_sintype.find(skl.child("Sin_Type").attribute("val").as_string())->second;
+
 			// Ó²±Ò
 			for (pugi::xml_node& c : skl.children("Coin"))
 			{

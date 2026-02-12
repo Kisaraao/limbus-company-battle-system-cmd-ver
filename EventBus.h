@@ -6,12 +6,14 @@
 // 1. 定义事件类型（本质就是个标签）
 enum class BattleEvent {
     TurnStart,      // 回合开始
-    TurnEnd,        // 回合结束
-    rollCoin,       // 投掷硬币
+    BeforeCombat,   // 拼点前
+    RollCoin,       // 投掷硬币
+    AfterCombat,   // 拼点后
     BeforeDamage,   // 攻击前
     Damage,         // 攻击中
-    Critical,         // 暴击
+    Critical,       // 暴击
     AfterDamage,    // 攻击后
+    TurnEnd,        // 回合结束
 };
 
 // 2. 定义回调函数类型（函数指针的现代写法）

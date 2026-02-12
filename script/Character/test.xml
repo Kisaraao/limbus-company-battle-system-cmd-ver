@@ -11,7 +11,7 @@
     <Confusion val="0.25"/>
     <Skill>
         <Count val="1"/>
-        <Name val="一键上5种特效"/>
+        <Name val="狂怒"/>
         <Attack_Level val="0"/>
         <Base val="20"/>
         <Change val="20"/>
@@ -19,11 +19,14 @@
         <Sin_Type val="暴怒"/>
         <Coin type="Unbreakable">
             <Effect target="self" type="breath" mode="add" x="50" y="50"/>
-            <Effect target="enemy" type="burn" mode="add" x="50" y="50"/>
-            <Effect target="enemy" type="bleed" mode="add" x="50" y="50"/>
-            <Effect target="enemy" type="rupture" mode="add" x="50" y="50"/>
-            <Effect target="enemy" type="sink" mode="add" x="50" y="50"/>
-            <Effect target="enemy" type="tremor" mode="add" x="50" y="50"/>
+            <Effect target="enemy" type="burn" mode="add" x="5" y="5"/>
+            <Effect target="enemy" type="bleed" mode="add" x="5" y="5"/>
+            <Effect target="enemy" type="rupture" mode="add" x="5" y="5"/>
+            <Effect target="enemy" type="sink" mode="add" x="5" y="5"/>
+            <Effect target="enemy" type="tremor" mode="add" x="5" y="5"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="burn-explode"/>
+            <Effect target="enemy" type="sink-explode"/>
         </Coin>
     </Skill>
 
