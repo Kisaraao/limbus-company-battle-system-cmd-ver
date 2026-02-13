@@ -1,22 +1,32 @@
 <Character>
+    <!-- 名称 -->
     <Name val="测试"/>
+    <!-- 特性关键词 -->
     <Tag val="测试角色"/>
+    <!-- 等级 -->
     <Level val="100"/>
-    <Health Min="0" Max="10000"/>
-    <Sanity Min="-45" Max="45"/>
+    <!-- 血量上下限与开局血量 -->
+    <Health Min="0" Max="10000"></Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-45" Max="45"></Sanity>
+    <!-- 速度上下限 -->
     <Speed Min="1" Max="1"/>
-    <Resist Slash="1.0" Stab="1.0" Strike="1.0"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="1.0"/>
+    <Resist name="穿刺" val="1.0"/>
+    <Resist name="打击" val="1.0"/>
+    <!-- 混乱阈值 -->
     <Confusion val="0.75"/>
     <Confusion val="0.5"/>
     <Confusion val="0.25"/>
+
     <Skill>
         <Count val="1"/>
         <Name val="狂怒"/>
         <Attack_Level val="0"/>
         <Base val="20"/>
         <Change val="20"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="暴怒"/>
+        <Type attack="斩击" sin="暴怒"/>
         <Coin type="Unbreakable">
             <Effect target="self" type="breath" mode="add" x="50" y="50"/>
             <Effect target="enemy" type="burn" mode="add" x="5" y="5"/>

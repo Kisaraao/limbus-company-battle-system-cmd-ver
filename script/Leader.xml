@@ -6,7 +6,7 @@
     <!-- 测试 -->
     <Character path="test"/>
     <Battle>
-        <Player name="albina"/>
-        <Enemy name="valencina"/>
+        <Player name="valencina" slots="1"/>
+        <Enemy name="albina" slots="1"/>
     </Battle>
 </Leader>

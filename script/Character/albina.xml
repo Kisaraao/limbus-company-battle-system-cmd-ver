@@ -1,36 +1,47 @@
 <Character>
+    <!-- 名称 -->
     <Name val="环指 子辈 - 阿尔比娜"/>
+    <!-- 特性关键词 -->
     <Tag val="手指"/>
     <Tag val="环指"/>
     <Tag val="蜘蛛巢"/>
     <Tag val="子辈"/>
+    <!-- 等级 -->
     <Level val="65"/>
-    <Health Min="0" Max="1352"/>
-    <Sanity Min="-45" Max="45"/>
+    <!-- 血量上下限与开局血量 -->
+    <Health Min="0" Max="1352"></Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-45" Max="45"></Sanity>
+    <!-- 速度上下限 -->
     <Speed Min="1" Max="3"/>
-    <Resist Slash="0.8" Stab="1" Strike="1.2"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="0.8"/>
+    <Resist name="穿刺" val="1.0"/>
+    <Resist name="打击" val="1.2"/>
+    <!-- 混乱阈值 -->
     <Confusion val="0.39"/>
-    <Skill>
+
+    <!-- 技能 -->
+    <Skill type="attack">
         <Count val="4"/>
         <Name val="屠宰-肋骨"/>
+        <Type attack="斩击" sin="暴食"/>
         <Attack_Level val="-2"/>
         <Base val="4"/>
         <Change val="3"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="暴食"/>
         <Coin>
             <Effect target="enemy" type="bleed" mode="add" x="4"/>
         </Coin>
-        <Coin/>
+        <Coin></Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="4"/>
         <Name val="禁止破坏展品"/>
+        <Type attack="斩击" sin="暴怒"/>
         <Attack_Level val="4"/>
         <Base val="4"/>
         <Change val="4"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="暴怒"/>
         <Coin>
             <Effect target="enemy" type="bleed" mode="add" y="2"/>
         </Coin>
@@ -38,43 +49,43 @@
             <Effect target="enemy" type="bleed" mode="add" x="2"/>
         </Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="4"/>
         <Name val="回旋粉碎"/>
+        <Type attack="斩击" sin="暴食"/>
         <Attack_Level val="0"/>
         <Base val="4"/>
         <Change val="3"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="暴食"/>
         <Coin>
             <Effect target="enemy" type="bleed" mode="add" y="2"/>
         </Coin>
-        <Coin/>
+        <Coin></Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="3"/>
         <Name val="肌腱撕裂"/>
+        <Type attack="斩击" sin="暴食"/>
         <Attack_Level val="0"/>
         <Base val="4"/>
         <Change val="2"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="暴食"/>
         <Coin>
             <Effect target="enemy" type="bleed" mode="add" x="6"/>
         </Coin>
         <Coin>
             <Effect target="enemy" type="bleed" mode="add" y="1"/>
         </Coin>
-        <Coin/>
+        <Coin></Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="2"/>
         <Name val="法西娅在挨饿呢"/>
+        <Type attack="穿刺" sin="嫉妒"/>
         <Attack_Level val="0"/>
         <Base val="4"/>
         <Change val="4"/>
-        <Attack_Type val="穿刺"/>
-        <Sin_Type val="嫉妒"/>
         <Coin type="Unbreakable">
             <Effect target="enemy" type="bleed" mode="add" x="10"/>
         </Coin>
@@ -87,14 +98,14 @@
             <Effect target="self" type="sanity" mode="add" x="5"/>
         </Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="2"/>
         <Name val="到法西娅的吃饭时间了"/>
+        <Type attack="穿刺" sin="嫉妒"/>
         <Attack_Level val="2"/>
         <Base val="4"/>
         <Change val="4"/>
-        <Attack_Type val="穿刺"/>
-        <Sin_Type val="嫉妒"/>
         <Coin type="Unbreakable">
             <Before content="随着灵感的涌现。我会取走你的一切。"/>
             <Effect target="enemy" type="bleed" mode="add" x="10"/>
@@ -107,51 +118,52 @@
             <Effect target="self" type="sanity" mode="add" x="10"/>
         </Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="1"/>
         <Name val="受压肉体"/>
+        <Type attack="斩击" sin="色欲"/>
         <Attack_Level val="5"/>
         <Base val="8"/>
         <Change val="4"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="色欲"/>
         <Coin type="Unbreakable">
             <Before content="以我的骨头为框架，以我的血肉为填充……表观艺术。"/>
             <Effect target="enemy" type="sanity" mode="add" x="-5"/>
             <Effect target="self" type="sanity" mode="add" x="5"/>
         </Coin>
-        <Coin type="Unbreakable"/>
-        <Coin type="Unbreakable"/>
-        <Coin type="Unbreakable"/>
+        <Coin type="Unbreakable"></Coin>
+        <Coin type="Unbreakable"></Coin>
+        <Coin type="Unbreakable"></Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="1"/>
         <Name val="受压肉体的解放"/>
+        <Type attack="斩击" sin="色欲"/>
         <Attack_Level val="5"/>
         <Base val="10"/>
         <Change val="4"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="色欲"/>
         <Coin type="Unbreakable">
             <Before content="这次我一定要完成。能被大师认可的杰作……！"/>
             <Effect target="enemy" type="sanity" mode="add" x="-5"/>
         </Coin>
-        <Coin type="Unbreakable"/>
-        <Coin type="Unbreakable"/>
+        <Coin type="Unbreakable"></Coin>
+        <Coin type="Unbreakable"></Coin>
         <Coin type="Unbreakable">
             <Effect target="enemy" type="bleed" mode="add" y="3"/>
         </Coin>
     </Skill>
-    <Skill>
+
+    <Skill type="attack">
         <Count val="1"/>
         <Name val="铁幕"/>
+        <Type attack="打击" sin="怠惰"/>
         <Attack_Level val="5"/>
         <Base val="10"/>
         <Change val="15"/>
-        <Attack_Type val="打击"/>
-        <Sin_Type val="怠惰"/>
         <Coin type="Unbreakable">
             <Before content="等等……不要碰法西娅。仅供肉眼欣赏。"/>
         </Coin>
     </Skill>
+
 </Character>

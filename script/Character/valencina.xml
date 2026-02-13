@@ -1,5 +1,7 @@
 <Character>
+    <!-- 名称 -->
     <Name val="拇指 父辈 - 瓦伦希娜"/>
+    <!-- 特性关键词 -->
     <Tag val="二老板"/>
     <Tag val="手指"/>
     <Tag val="拇指"/>
@@ -7,21 +9,29 @@
     <Tag val="战争英雄"/>
     <Tag val="七大家族"/>
     <Tag val="烟霾战争"/>
+    <!-- 等级 -->
     <Level val="77"/>
-    <Health Min="0" Max="3204"/>
-    <Sanity Min="-45" Max="45"/>
+    <!-- 血量上下限与开局血量 -->
+    <Health Min="0" Max="3204"></Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-45" Max="45"></Sanity>
+    <!-- 速度上下限 -->
     <Speed Min="2" Max="5"/>
-    <Resist Slash="1.2" Stab="1.0" Strike="0.5"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="1.2"/>
+    <Resist name="穿刺" val="1.0"/>
+    <Resist name="打击" val="0.5"/>
+    <!-- 混乱阈值 -->
     <Confusion val="0.5"/>
 
-    <Skill>
+    <!-- 技能 -->
+    <Skill type="attack">
         <Count val="7"/>
         <Name val="切割攻击"/>
+        <Type attack="斩击" sin="傲慢"/>
         <Attack_Level val="0"/>
         <Base val="3"/>
         <Change val="4"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="傲慢"/>
         <Coin>
             <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
             <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
@@ -32,14 +42,13 @@
         </Coin>
     </Skill>
 
-    <Skill>
+    <Skill type="attack">
         <Count val="6"/>
         <Name val="尖端打击"/>
+        <Type attack="斩击" sin="怠惰"/>
         <Attack_Level val="0"/>
         <Base val="4"/>
         <Change val="3"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="怠惰"/>
         <Coin>
             <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
             <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
@@ -50,14 +59,13 @@
         </Coin>
     </Skill>
 
-    <Skill>
+    <Skill type="attack">
         <Count val="5"/>
         <Name val="解兔"/>
+        <Type attack="斩击" sin="色欲"/>
         <Attack_Level val="0"/>
         <Base val="5"/>
         <Change val="3"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="色欲"/>
         <Coin>
             <Effect target="enemy" type="burn" mode="add" x="3" y="3"/>
             <Effect target="enemy" type="tremor" mode="add" x="3" y="3"/>
@@ -67,14 +75,13 @@
         </Coin>
     </Skill>
 
-    <Skill>
+    <Skill type="attack">
         <Count val="4"/>
         <Name val="解鹿"/>
+        <Type attack="斩击" sin="傲慢"/>
         <Attack_Level val="3"/>
         <Base val="6"/>
         <Change val="4"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="傲慢"/>
         <Coin>
             <Before content="能接得住的话，就试试看吧。"/>
             <Effect target="enemy" type="burn" mode="add" x="3"/>
@@ -90,14 +97,13 @@
         </Coin>
     </Skill>
 
-    <Skill>
+    <Skill type="attack">
         <Count val="3"/>
         <Name val="很荣幸用这颗子弹将你洞穿"/>
+        <Type attack="穿刺" sin="怠惰"/>
         <Attack_Level val="2"/>
         <Base val="5"/>
         <Change val="3"/>
-        <Attack_Type val="穿刺"/>
-        <Sin_Type val="怠惰"/>
         <Coin>
             <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
             <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
@@ -112,14 +118,13 @@
         </Coin>
     </Skill>
 
-    <Skill>
+    <Skill type="attack">
         <Count val="2"/>
         <Name val="解象"/>
+        <Type attack="斩击" sin="色欲"/>
         <Attack_Level val="3"/>
         <Base val="5"/>
         <Change val="3"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="色欲"/>
         <Coin type="Unbreakable">
             <Effect target="enemy" type="burn" mode="add" x="4"/>
             <Effect target="enemy" type="tremor" mode="add" x="4"/>
@@ -137,14 +142,13 @@
         </Coin>
     </Skill>
 
-    <Skill>
+    <Skill type="attack">
         <Count val="1"/>
         <Name val="处置"/>
+        <Type attack="斩击" sin="暴怒"/>
         <Attack_Level val="3"/>
         <Base val="6"/>
         <Change val="4"/>
-        <Attack_Type val="斩击"/>
-        <Sin_Type val="暴怒"/>
         <Coin type="Unbreakable">
             <Before content="烦死了，烦死了啊！你们和券券，全都烦死了！！！"/>
             <Effect target="enemy" type="burn" mode="add" x="3"/>

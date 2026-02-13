@@ -1,0 +1,14 @@
+<Type>
+    <!-- 攻击类型 -->
+    <Attack name="斩击"/>
+    <Attack name="穿刺"/>
+    <Attack name="打击"/>
+    <!-- 罪孽类型 -->
+    <Sin name="傲慢" color="1"/>
+    <Sin name="暴怒" color="4"/>
+    <Sin name="色欲" color="12"/>
+    <Sin name="怠惰" color="6"/>
+    <Sin name="暴食" color="10"/>
+    <Sin name="嫉妒" color="5"/>
+    <Sin name="忧郁" color="3"/>
+</Type>
