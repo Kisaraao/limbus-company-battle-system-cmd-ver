@@ -1,254 +1,63 @@
-ï»¿#pragma once
+#pragma once
 #include <iostream>
+#include <memory>
 #include <vector>
-#include <string>
-#include <unordered_map>
-#include <queue>
-#include <random>
-#include <functional>
-#include "Vector2.h"
-#include "EventBus.h"
-#include "ConsoleUtils.h"
-#include "Type.h"
+
+#include "Data.h"
+#include "Effect.h"
+#include "Random Manager.h"
 
 #pragma execution_character_set("utf-8")
 
-inline std::unordered_map<std::string, AttackType> string_to_attacktype = {
-	{ "æ–©å‡»", AttackType::Slash },
-	{ "ç©¿åˆº", AttackType::Stab },
-	{ "æ‰“å‡»", AttackType::Strike },
-	{ "æ— ", AttackType::None }
-};
-
-inline std::unordered_map<AttackType, std::string> attacktype_to_string = {
-	{ AttackType::Slash, "æ–©å‡»" },
-	{ AttackType::Stab, "ç©¿åˆº" },
-	{ AttackType::Strike, "æ‰“å‡»" },
-	{ AttackType::None, "æ— " }
-};
-
-inline std::unordered_map<std::string, SinType> string_to_sintype = {
-	{ "æ— ", SinType::None },
-	{ "å‚²æ…¢", SinType::Pride },
-	{ "æš´æ€’", SinType::Wrath },
-	{ "è‰²æ¬²", SinType::Lust },
-	{ "æ€ æƒ°", SinType::Sloth },
-	{ "æš´é£Ÿ", SinType::Gluttony },
-	{ "å«‰å¦’", SinType::Envy },
-	{ "å¿§éƒ", SinType::Melancholy }
-};
-
-inline std::unordered_map<SinType, std::string> sintype_to_string = {
-	{ SinType::None, "æ— " },
-	{ SinType::Pride, "å‚²æ…¢" },
-	{ SinType::Wrath, "æš´æ€’" },
-	{ SinType::Lust, "è‰²æ¬²" },
-	{ SinType::Sloth, "æ€ æƒ°" },
-	{ SinType::Gluttony, "æš´é£Ÿ" },
-	{ SinType::Envy, "å«‰å¦’" },
-	{ SinType::Melancholy, "å¿§éƒ" }
-};
-
-struct Effect
-{
-	std::string target; // "enemy" or "self"
-	std::string type; // "bleed", "burn", "rupture", "sink"
-	std::string mode; // "add", "set"
-	Vector2 value; // x=å¼ºåº¦, y=å±‚æ•°
-};
-
-class Coin {
-public:
-	//ç¡¬å¸ç±»å‹
-	std::string Type;
-
-	bool is_Broke = false;
-	bool current_Face;
-	float Point;
-	float Damage;
-
-	std::vector<Effect> effects; // æ•ˆæœ
-
-	//ç‰¹è‰²æ–‡æœ¬
-	std::string before;
-	std::string after;
-
-public:
-
-	void drawCoin() {
-		if (Type == "Unbreakable")
-		{
-			if (is_Broke)
-			{
-				if (current_Face)//ç ´ç¢çº¢å¸ æ­£é¢	â–¡ 12
-				{
-					setColor(12);
-				}
-				else {//ç ´ç¢çº¢å¸ åé¢	â–¡ 4
-					setColor(8);
-				}
-				std::cout << "â–¡";
-			}
-			else {
-				if (current_Face)//çº¢å¸ æ­£é¢		â–  12
-				{
-					setColor(12);
-				}
-				else {//çº¢å¸ åé¢		â–  4
-					setColor(8);
-				}
-				std::cout << "â– ";
-			}
-		}
-		else
-		{
-			if (is_Broke)//ç ´ç¢æ™®é€šç¡¬å¸	Ã— 8
-			{
-				setColor(8);
-				std::cout << "Ã—";
-			}
-			else {
-				if (current_Face)//æ™®é€šç¡¬å¸ æ­£é¢	â— 14
-				{
-					setColor(14);
-				}
-				else {//æ™®é€šç¡¬å¸ åé¢	â— 6
-					setColor(8);
-				}
-				std::cout << "â—";
-			}
-		}
-		setColor(8);
-	}
-
-	bool isEffectContain(const std::string& str) {
-		std::cout << "[æ—¥å¿—] " << "Coin::isEffectContain æ£€æµ‹ " << str << "æ˜¯å¦å­˜åœ¨\n";
-		for (auto& ptr : effects)
-		{
-			if (ptr.type == str)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-};
-
-class Skill
-{
-public:
-	Skill() = default;
-	~Skill() = default;
-
-	std::string Name;
-	int Attack_Level;
-	int Base;
-	int Change;
-	AttackType Attack_Type = AttackType::None;
-	SinType Sin_Type = SinType::None;
-	std::vector<Coin> Coin;
-
-	int Point;
-	float Damage;
-
-	bool isAllCoinBroke() {
-		for (size_t i = 0; i < Coin.size(); i++)
-		{
-			if (!Coin[i].is_Broke) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	bool isRedCoinContained() {
-		for (size_t i = 0; i < Coin.size(); i++)
-		{
-			if (Coin[i].Type == "Unbreakable") {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool destoryFrontCoin() {
-		for (auto& ptr : Coin) {
-			if (!ptr.is_Broke)
-			{
-				ptr.is_Broke = true;
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-};
-
 enum class Status
 {
-	normal,
-	confusion,
-	dead
+	Normal,
+	Confusion,
+	Dead
 };
 
-class CharacterData
+class CharacterInstance
 {
 public:
-	CharacterData(const std::string& name, const std::vector<std::string>& tag_list, const std::vector<Skill>& skill_list, int level, const Vector2& health, const Vector2& sanity, const Vector2& speed) {
-		Name = name;
-		Tag_List = tag_list;
-		Skill_List = skill_list;
-		Level = level;
-		Health = health;
-		Sanity = sanity;
-		Speed = speed;
+	CharacterInstance(const CharacterTemplate* data) 
+		: Data(data) {
+		init();
 	}
-	CharacterData() = default;
-	~CharacterData() = default;
-
-	std::string Name;
-	std::vector<std::string> Tag_List;
-	std::vector<Skill> Skill_List;
-	std::vector<int> Skill_weight;
-	int Level;
-	Vector2 Health;
-	Vector2 Sanity;
-	Vector2 Speed;
-	std::unordered_map<AttackType, float> Attack_Type_Resist;
-	std::queue<float> Confusion;
-
-private:
-};
-
-class BattleCharacter
-{
+	CharacterInstance() = default;
+	~CharacterInstance() = default;
 public:
-	BattleCharacter(const CharacterData* data) {
-		Data = data;
-		reset();
+	// Ô­½ÇÉ«Êı¾İ
+	const CharacterTemplate* Data = nullptr;
+	// Ä¿Ç°×´Ì¬
+	Status status;
+	// Ä¿Ç°ÑªÁ¿
+	int health;
+	// Ä¿Ç°ÀíÖÇ
+	int sanity;
+	// Ä¿Ç°ËÙ¶È
+	int speed;
+	// Ä¿Ç°»ìÂÒãĞÖµ¶ÓÁĞ
+	std::queue<float> confusion;
+	// ÒÑ»ìÂÒµÄ»ØºÏ
+	int confusion_round;
+public:
+	void loadData(const CharacterTemplate* ch) { Data = ch; }
+	void init() {
+		status = Status::Normal;
+		health = Data->begin_health;
+		sanity = Data->begin_sanity;
+		speed = RandomManager::get().range(Data->speed.x, Data->speed.y);
+		confusion = Data->confusion;
+		confusion_round = 0;
 	}
-	BattleCharacter() = default;
-	~BattleCharacter() = default;
-
-	void loadCharacterData(const CharacterData* ch) {
-		Data = ch;
-		reset();
-	}
-
-	void setCurrentSkill(int index) {
-		skill = Skill(Data->Skill_List[index]);
-	}
-
 	void handleConfusion() {
-		if (status == Status::confusion)
+		if (status == Status::Confusion)
 		{
 			confusion_round++;
 			if (confusion_round == 2)
 			{
 				confusion_round = 0;
-				status = Status::normal;
+				status = Status::Normal;
 			}
 		}
 	}
@@ -256,153 +65,54 @@ public:
 		if (confusion.empty()) {
 			return false;
 		}
-		if (health <= Data->Health.y * confusion.front())
+		if (health <= Data->health.y * confusion.front())
 		{
-			std::cout << "[æ—¥å¿—] " << Data->Name;
-			setColor(6);
-			std::cout << " é™·å…¥äº†æ··ä¹±ï¼\n\n";
-			setColor(8);
+			if (status != Status::Confusion && status != Status::Dead)
+			{
+				status = Status::Confusion;
+			}
 			confusion.pop();
-			status = Status::confusion;
 			return true;
 		}
 		return false;
 	}
-
 	bool checkDeath() {
-		if (health <= Data->Health.x)
+		if (health <= Data->health.x)
 		{
-			health = Data->Health.x;
-			status = Status::dead;
+			health = Data->health.x;
+			status = Status::Dead;
 			return true;
 		}
 		return false;
 	}
-
-	void rollSpeed() {
-		speed_rd.param(std::uniform_int_distribution<int>::param_type(Data->Speed.x, Data->Speed.y));
-		speed = speed_rd(random);
-	}
-
-	void rollWeight() {
-		weight = weight_rd(random);
-	}
-
-	void reset() {
-		if (!Data) return;
-		health = Data->Health.y;
-		sanity = 0;
-		speed = Data->Speed.x;
-		confusion = Data->Confusion;
-		status = Status::normal;
-		weight_rd.param(std::discrete_distribution<>::param_type(Data->Skill_weight.begin(), Data->Skill_weight.end()));
-	}
-
-public:
-
 	void addSanity(int num) {
 		sanity += num;
-		if (sanity > Data->Sanity.y)
+		if (sanity > Data->sanity.y)
 		{
-			sanity = Data->Sanity.y;
+			sanity = Data->sanity.y;
 		}
-		else if (sanity < Data->Sanity.x)
+		else if (sanity < Data->sanity.x)
 		{
-			sanity = Data->Sanity.x;
-			std::cout << "[æ—¥å¿—] " << Data->Name << "é™·å…¥äº†ææ…Œã€‚\n";
-			sanity = 0;
-			addSink(Vector2(0, 10));
+			sanity = Data->sanity.x;
+			//std::cout << "[ÈÕÖ¾] " << Data->name << "ÏİÈëÁË¿Ö»Å¡£\n";
+			//sanity = 0;
+			//addSink(Vector2(0, 10));
 		}
 	}
-
 	void addHealth(int num) {
 		health += num;
-		if (health > Data->Health.y)
+		if (health > Data->health.y)
 		{
-			health = Data->Health.y;
+			health = Data->health.y;
 		}
-		else if (health < Data->Health.x)
+		else if (health < Data->health.x)
 		{
-			health = Data->Health.x;
+			health = Data->health.x;
 		}
 	}
-
-	bool rollCoinPoint(int index) {
-
-		if (index >= 0 && index <= skill.Coin.size())
-		{
-			sanity_rd.param(std::bernoulli_distribution::param_type(0.5 + sanity * 0.01));
-			if (sanity_rd(random))
-			{
-				skill.Coin[index].current_Face = true;
-				return true;
-			}
-			else
-			{
-				skill.Coin[index].current_Face = false;
-				return false;
-			}
-		}
-		return false;
-	}
-
+	bool isConfused() const { return status == Status::Confusion; }
 public:
-
-	std::random_device rd;
-	std::mt19937 random = std::mt19937(rd());
-	std::bernoulli_distribution sanity_rd;
-	std::bernoulli_distribution breath_rd;
-	std::uniform_int_distribution<int> speed_rd;
-	std::discrete_distribution<int> weight_rd;
-
-	const CharacterData* Data = nullptr;
-
-	Skill skill;
-
-	int weight;
-	int choice;
-	Status status = Status::normal;
-	int health;
-	int sanity;
-	int speed;
-
-	std::queue<float> confusion;
-	int confusion_round = 0;
-
-public:
-	// æ•ˆæœ
-
-	void checkOver(Vector2& vec) {
-		if (vec.x > 99)
-		{
-			vec.x = 99;
-		}
-		if (vec.x < 0)
-		{
-			vec.x = 0;
-		}
-
-		if (vec.y > 99)
-		{
-			vec.y = 99;
-		}
-		if (vec.y < 0)
-		{
-			vec.y = 0;
-		}
-	}
-
-	void keepAble(Vector2& vec) {
-		if (vec.x == 0)
-		{
-			vec.x = 1;
-		}
-		if (vec.y == 0)
-		{
-			vec.y = 1;
-		}
-	}
-
+	// Ğ§¹û TODO: ¼ò»¯
 	Vector2 burn = { 0, 0 };
 	void addBurn(const Vector2& vec) {
 		burn += vec;
@@ -415,7 +125,7 @@ public:
 		{
 			--burn.y;
 			addHealth(-burn.x);
-			std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << burn.x << " ç‚¹çƒ§ä¼¤ä¼¤å®³" << " è¿˜å‰© " << burn.y << " å±‚çƒ§ä¼¤å±‚æ•°ã€‚" << "\n";
+			std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << burn.x << " µãÉÕÉËÉËº¦" << " »¹Ê£ " << burn.y << " ²ãÉÕÉË²ãÊı¡£" << "\n";
 			damage = -burn.x;
 			if (burn.y == 0)
 			{
@@ -429,7 +139,7 @@ public:
 		if (burn.x != 0 && burn.y != 0)
 		{
 			damage = round(burn.y * burn.x);
-			std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << damage << " ç‚¹çƒ§ä¼¤ä¼¤å®³ã€‚\n";
+			std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << damage << " µãÉÕÉËÉËº¦¡£\n";
 			addHealth(-damage);
 			burn = { 0,0 };
 		}
@@ -448,7 +158,7 @@ public:
 		{
 			--bleed.y;
 			addHealth(-bleed.x);
-			std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << bleed.x << " ç‚¹æµè¡€ä¼¤å®³" << " è¿˜å‰© " << bleed.y << " å±‚æµè¡€å±‚æ•°ã€‚" << "\n";
+			std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << bleed.x << " µãÁ÷ÑªÉËº¦" << " »¹Ê£ " << bleed.y << " ²ãÁ÷Ñª²ãÊı¡£" << "\n";
 			damage = bleed.x;
 			if (bleed.y == 0)
 			{
@@ -474,7 +184,7 @@ public:
 		{
 			--rupture.y;
 			addHealth(-rupture.x);
-			std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << rupture.x << " ç‚¹ç ´è£‚ä¼¤å®³" << " è¿˜å‰© " << rupture.y << " å±‚ç ´è£‚å±‚æ•°ã€‚" << "\n";
+			std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << rupture.x << " µãÆÆÁÑÉËº¦" << " »¹Ê£ " << rupture.y << " ²ãÆÆÁÑ²ãÊı¡£" << "\n";
 			damage = rupture.x;
 			if (rupture.y == 0)
 			{
@@ -499,7 +209,7 @@ public:
 		{
 			--sink.y;
 			addSanity(-sink.x);
-			std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << sink.x << " ç‚¹æ²‰æ²¦ç†æ™ºé™ä½" << " è¿˜å‰© " << sink.y << " å±‚æ²‰æ²¦å±‚æ•°ã€‚" << "\n";
+			std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << sink.x << " µã³ÁÂÙÀíÖÇ½µµÍ" << " »¹Ê£ " << sink.y << " ²ã³ÁÂÙ²ãÊı¡£" << "\n";
 			if (sink.y == 0)
 			{
 				sink.x = 0;
@@ -516,19 +226,19 @@ public:
 		if (sink.x != 0 && sink.y != 0)
 		{
 			san_damage = sink.y * sink.x;
-			if (san_damage > sanity - Data->Sanity.x)
+			if (san_damage > sanity - Data->sanity.x)
 			{
-				damage = round(san_damage - (sanity - Data->Sanity.x));
-				san_damage = sanity - Data->Sanity.x;
+				damage = round(san_damage - (sanity - Data->sanity.x));
+				san_damage = sanity - Data->sanity.x;
 
-				addSanity(-(sanity - Data->Sanity.x));
+				addSanity(-(sanity - Data->sanity.x));
 				addHealth(-damage);
 			}
 			else
 			{
 				addSanity(-san_damage);
 			}
-			std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << san_damage << " ç‚¹ç†æ™ºä¼¤å®³ä¸ " << damage << " ç‚¹çš„æº¢å‡ºè½¬æ¢ä¼¤å®³ã€‚\n";
+			std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << san_damage << " µãÀíÖÇÉËº¦Óë " << damage << " µãµÄÒç³ö×ª»»ÉËº¦¡£\n";
 			sink = { 0,0 };
 		}
 		return damage;
@@ -548,12 +258,12 @@ public:
 			if (confusion.empty())
 			{
 				damage = round(tremor.x / 2);
-				std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << damage << " ç‚¹éœ‡é¢¤çˆ†å‘ä¼¤å®³" << " è¿˜å‰© " << tremor.y << " å±‚éœ‡é¢¤å±‚æ•°ã€‚" << "\n";
+				std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << damage << " µãÕğ²ü±¬·¢ÉËº¦" << " »¹Ê£ " << tremor.y << " ²ãÕğ²ü²ãÊı¡£" << "\n";
 				addHealth(-damage);
 			}
 			else {
-				confusion.front() += static_cast<float>(tremor.x / Data->Health.y);
-				std::cout << "[æ—¥å¿—] " << Data->Name << " å—åˆ° " << tremor.x << " ç‚¹æ··ä¹±é˜ˆå€¼å‰ç§»" << " è¿˜å‰© " << tremor.y << " å±‚éœ‡é¢¤å±‚æ•°ã€‚" << "\n";
+				confusion.front() += static_cast<float>(tremor.x / Data->health.y);
+				std::cout << "[ÈÕÖ¾] " << Data->name << " ÊÜµ½ " << tremor.x << " µã»ìÂÒãĞÖµÇ°ÒÆ" << " »¹Ê£ " << tremor.y << " ²ãÕğ²ü²ãÊı¡£" << "\n";
 			}
 			if (tremor.y == 0)
 			{
@@ -576,18 +286,19 @@ public:
 	bool handleBreath() {
 		if (breath.x != 0 && breath.y != 0)
 		{
+			bool flag = false;
 			if (breath.x * 0.05 > 1)
 			{
-				breath_rd.param(std::bernoulli_distribution::param_type(1));
+				flag = RandomManager::get().probability(1);
 			}
 			else
 			{
-				breath_rd.param(std::bernoulli_distribution::param_type(breath.x * 0.05));
+				flag = RandomManager::get().probability(breath.x * 0.05);
 			}
-			if (breath_rd(random)) 
+			if (flag)
 			{
 				--breath.y;
-				std::cout << "[æ—¥å¿—] " << Data->Name << " é€ æˆæš´å‡» è¿˜å‰© " << breath.y << " å±‚å‘¼å¸æ³•å±‚æ•°ã€‚" << "\n";
+				std::cout << "[ÈÕÖ¾] " << Data->name << " Ôì³É±©»÷ »¹Ê£ " << breath.y << " ²ãºôÎü·¨²ãÊı¡£" << "\n";
 				return true;
 			}
 			else { return false; }

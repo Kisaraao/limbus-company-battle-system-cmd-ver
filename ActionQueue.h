@@ -1,9 +1,13 @@
 #pragma once
 #include <iostream>
 #include <queue>
+#include <Windows.h>
+#include <cmath>
+
 #include "Character.h"
 #include "EventBus.h"
 #include "ConsoleUtils.h"
+#include "ActionSlot.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -16,16 +20,21 @@ enum class ActionType
 struct Action
 {
 	ActionType action_type;
-	BattleCharacter* a;
-	BattleCharacter* b;
+	ActionSlot* a;
+	ActionSlot* b;
 	float priority;  // 添加优先级字段
 };
 
+struct CombatEventData
+{
+	CharacterInstance* a;
+	CharacterInstance* b;
+};
+
 struct DamageEventData {
-	BattleCharacter* attacker;
-	BattleCharacter* target;
+	ActionSlot* attacker;
+	ActionSlot* target;
 	Coin* coin;
-	int* total_damage;
 	float* mul_1;
 	float* mul_2;
 	float* add_1;
@@ -38,24 +47,17 @@ public:
 	ActionQueue() = default;
 	~ActionQueue() = default;
 
-	void addAction(ActionType type, BattleCharacter& a, BattleCharacter& b, float priority) {
-		//std::cout << "【日志】 " << "调用ActionQueue::addAction" << "\n";
-		Action action;
-		action.action_type = type;
-		action.priority = priority;
-		action.a = &a;
-		action.b = &b;
-		queue.push(action);
-	}
+	void addAction(ActionType type, ActionSlot& a, ActionSlot& b, float priority) { queue.push({ type, &a, &b, priority }); }
 
-	bool isEmpty() const {
-		return queue.empty();
-	}
+	bool isEmpty() const { return queue.empty(); }
 
 	void executeAction() {
+		// 获取第一个行动
 		Action action = queue.top();
-		BattleCharacter* winner = nullptr;
-		BattleCharacter* loser = nullptr;
+		queue.pop();
+		// 赢者与败者
+		ActionSlot* winner = nullptr;
+		ActionSlot* loser = nullptr;
 		switch (action.action_type)
 		{
 		case ActionType::Combat:
@@ -69,25 +71,25 @@ public:
 			EventBus::get().dispatch(BattleEvent::AfterCombat, nullptr);
 
 			// 玩家点数大
-			if (action.a->skill.Point > action.b->skill.Point) { winner = action.a; loser = action.b; }
+			if (action.a->selecting.total_point > action.b->selecting.total_point) { winner = action.a; loser = action.b; }
 			// 敌人点数大
 			else { winner = action.b; loser = action.a; }
 
 			// 增减理智
-			winner->addSanity(static_cast<int>(winner->Data->Sanity.y * 0.2));
-			loser->addSanity(-static_cast<int>(loser->Data->Sanity.y * 0.1));
+			winner->Owner->addSanity(static_cast<int>(winner->Owner->Data->sanity.y * 0.2));
+			loser->Owner->addSanity(-static_cast<int>(winner->Owner->Data->sanity.y * 0.1));
 
 			// 为胜者加一个单方面攻击
 			addAction(ActionType::Unilateral, *winner, *loser, action.priority - 0.1f);
 
 			// 若败者有红币，则加一个单方面攻击
-			if (loser->skill.isRedCoinContained())
+			if (loser->selecting.isRedCoinContained())
 			{
 				addAction(ActionType::Unilateral, *loser, *winner, action.priority - 0.2f);
 			}
 			break;
 		case ActionType::Unilateral:
-			if (action.a->status != Status::confusion)
+			if (!action.a->Owner->isConfused())
 			{
 				makeDamage(*action.a, *action.b);
 			}
@@ -96,174 +98,186 @@ public:
 			break;
 		}
 		setColor(8);
-		queue.pop();
 	}
 
 public:
 
-	bool isLevelDiff(BattleCharacter& ch_0, BattleCharacter& ch_1) {
-		return ch_0.skill.Attack_Level > ch_1.skill.Attack_Level;
+	bool isLevelDiff(Skill& a, Skill& b) {
+		return a.attack_level > b.attack_level;
 	}
 
-	void initNum(BattleCharacter& ch) {
+	void initNum(ActionSlot& slot) {
 		// 初始化coin的Point, Damage
-		for (auto& ptr : ch.skill.Coin)
+		for (auto& ptr : slot.selecting.coin_list)
 		{
-			ptr.Point = 0;
-			ptr.Damage = 0;
+			ptr.point = 0;
+			ptr.damage = 0;
 		}
-		// 初始化skill的point, damage
-		ch.skill.Damage = 0;
-		ch.skill.Point = ch.skill.Base;
+		slot.selecting.total_point = 0;
+		slot.selecting.total_damage = 0;
 	}
 
-	void makeCombat(BattleCharacter& a, BattleCharacter& b) {
-		initNum(a);
-		initNum(b);
-
-		DamageEventData damage_event_data;
-
-		do
-		{
-			do
-			{
-
-				// 遍历 a
-				rollEachCoin(a);
-				damage_event_data.attacker = &a;
-				damage_event_data.target = &b;
-				EventBus::get().dispatch(BattleEvent::RollCoin, &damage_event_data);
-
-				// 遍历 b
-				rollEachCoin(b);
-				damage_event_data.attacker = &b;
-				damage_event_data.target = &a;
-				EventBus::get().dispatch(BattleEvent::RollCoin, &damage_event_data);
-
-				// 计算 a 点数
-				a.skill.Point = a.skill.Base;
-				if (isLevelDiff(a, b))
-				{
-					a.skill.Point += static_cast<int>((a.skill.Attack_Level - b.skill.Attack_Level) / 3);
-				}
-				for (auto& ptr : a.skill.Coin)
-				{
-					if (!ptr.is_Broke)
-					{
-						if (ptr.current_Face)
-						{
-							a.skill.Point += a.skill.Change;
-							ptr.Point = a.skill.Point;
-						}
-					}
-				}
-
-				// 计算 b 点数
-				b.skill.Point = b.skill.Base;
-				// 等压
-				if (isLevelDiff(b, a))
-				{
-					b.skill.Point += static_cast<int>((b.skill.Attack_Level - a.skill.Attack_Level) / 3);
-				}
-				for (auto& ptr : b.skill.Coin)
-				{
-					if (!ptr.is_Broke)
-					{
-						if (ptr.current_Face)
-						{
-							b.skill.Point += b.skill.Change;
-							ptr.Point = b.skill.Point;
-						}
-					}
-				}
-
-				// 打印a的技能硬币
-				setSinColor(a.skill.Sin_Type);
-				std::cout << "「" << a.skill.Name << "」";
-				printEachCoin(a.skill);
-				std::cout << " " << a.skill.Point << " ";
-				// 打印b的技能硬币
-				setSinColor(b.skill.Sin_Type);
-				std::cout << "「" << b.skill.Name << "」";
-				printEachCoin(b.skill);
-				std::cout << " " << b.skill.Point << "\n";
-
-				Sleep(150);
-
-			} while (a.skill.Point == b.skill.Point);	// 拼点直到点数不同
-
-			// 若a点数大于b, 摧毁b最前的硬币, 否则摧毁a最前的硬币
-			if (a.skill.Point > b.skill.Point) { b.skill.destoryFrontCoin(); }
-			else { a.skill.destoryFrontCoin(); }
-
-		} while (!a.skill.isAllCoinBroke() && !b.skill.isAllCoinBroke());
-
-		// 若硬币破碎，变动值固定为1
-		if (a.skill.isAllCoinBroke()) { a.skill.Change = 1; }
-		if (b.skill.isAllCoinBroke()) { b.skill.Change = 1; }
-
-		std::cout << "\n";
-	}
-
-	void rollEachCoin(BattleCharacter& ch) {
+	void rollEachCoin(ActionSlot& slot) {
 		// 遍历
-		for (size_t i = 0; i < ch.skill.Coin.size(); i++)
+		for (auto& ptr : slot.selecting.coin_list)
 		{
-			if (!ch.skill.Coin[i].is_Broke)  // 未破碎的普通硬币
-			{
-				ch.rollCoinPoint(i);
-			}
+			ptr.roll(slot.Owner->sanity);
 		}
 	}
 
-	void printEachCoin(Skill& skill) {
+	void rollCoin(ActionSlot& slot, int num) {
+		slot.selecting.coin_list[num].roll(slot.Owner->sanity);
+	}
+
+	void printEachCoin(ActionSlot& slot) {
 		// 打印硬币
-		for (auto& ptr : skill.Coin)
+		for (auto& ptr : slot.selecting.coin_list)
 		{
-			ptr.drawCoin();
+			if (ptr.type == "Unbreakable")
+			{
+				if (ptr.is_Broke)
+				{
+					if (ptr.current_Face)//破碎红币 正面	□ 12
+					{
+						setColor(12);
+					}
+					else {//破碎红币 反面	□ 4
+						setColor(8);
+					}
+					std::cout << "□";
+				}
+				else {
+					if (ptr.current_Face)//红币 正面		■ 12
+					{
+						setColor(12);
+					}
+					else {//红币 反面		■ 4
+						setColor(8);
+					}
+					std::cout << "■";
+				}
+			}
+			else
+			{
+				if (ptr.is_Broke)//破碎普通硬币	× 8
+				{
+					setColor(8);
+					std::cout << "×";
+				}
+				else {
+					if (ptr.current_Face)//普通硬币 正面	● 14
+					{
+						setColor(14);
+					}
+					else {//普通硬币 反面	● 6
+						setColor(8);
+					}
+					std::cout << "●";
+				}
+			}
+			setColor(8);
 		}
 	}
 
-	void printEachDamage(BattleCharacter& ch) {
+	void printEachDamage(ActionSlot& slot) {
 		// 打印伤害
 		std::cout << "\n";
-		for (size_t i = 0; i < ch.skill.Coin.size(); i++)
+		for (size_t i = 0; i < slot.selecting.coin_list.size(); i++)
 		{
-			if (!ch.skill.Coin[i].is_Broke || ch.skill.Coin[i].Type == "Unbreakable")  // 未破碎的普通硬币
+			if (!slot.selecting.coin_list[i].is_Broke || slot.selecting.coin_list[i].type == "Unbreakable")  // 未破碎的普通硬币
 			{
-				std::cout << round(ch.skill.Coin[i].Damage);
-				if (i != ch.skill.Coin.size() - 1)
+				std::cout << round(slot.selecting.coin_list[i].damage);
+				if (i != slot.selecting.coin_list.size() - 1)
 				{
-					if (!ch.skill.Coin[i + 1].is_Broke)
-					{
-						std::cout << "+";
-					}
+					std::cout << "+";
 				}
 			}
 		}
 	}
 
-	void makeDamage(BattleCharacter& attacker, BattleCharacter& target) {
+	void makeCombat(ActionSlot& a, ActionSlot& b) {
+		// 初始化每个硬币的point与damage
+		initNum(a);
+		initNum(b);
+		// 创建拼点事件传输数据
+		CombatEventData data;
+		data.a = a.Owner;
+		data.b = b.Owner;
+		// 拼点直到 a与b的点数不同 && 有一方硬币全部被摧毁
+		do
+		{
+			// 投掷a与b所有硬币
+			rollEachCoin(a);
+			rollEachCoin(b);
+			// 广播 投掷硬币
+			EventBus::get().dispatch(BattleEvent::RollCoin, &data);
+			// 计算 a 点数
+			a.selecting.total_point = a.selecting.base;
+			// 等压
+			if (isLevelDiff(a.selecting, b.selecting)) { a.selecting.total_point += static_cast<int>((a.selecting.attack_level - b.selecting.attack_level) / 3); }
+			// 根据硬币正面次数增加点数
+			for (auto& ptr : a.selecting.coin_list)
+			{
+				if (!ptr.is_Broke && ptr.current_Face)
+				{
+					a.selecting.total_point += a.selecting.change;
+				}
+			}
+			// 计算 b 点数
+			b.selecting.total_point = b.selecting.base;
+			// 等压
+			if (isLevelDiff(b.selecting, a.selecting)) { b.selecting.total_point += static_cast<int>((b.selecting.attack_level - a.selecting.attack_level) / 3); }
+			// 根据硬币正面次数增加点数
+			for (auto& ptr : b.selecting.coin_list)
+			{
+				if (!ptr.is_Broke && ptr.current_Face)
+				{
+					b.selecting.total_point += b.selecting.change;
+				}
+			}
+
+			// 若a点数大于b, 摧毁b最前的硬币；若b点数大于a，摧毁a最前的硬币
+			if (a.selecting.total_point > b.selecting.total_point) { b.selecting.destoryFrontCoin(); }
+			else if (b.selecting.total_point > a.selecting.total_point) { a.selecting.destoryFrontCoin(); }
+
+			// 打印a的技能硬币
+			setSinColor(a.selecting.sin_type);
+			std::cout << "「" << a.selecting.name << "」";
+			printEachCoin(a);
+			std::cout << " " << a.selecting.total_point << " ";
+			// 打印b的技能硬币
+			setSinColor(b.selecting.sin_type);
+			std::cout << "「" << b.selecting.name << "」";
+			printEachCoin(b);
+			std::cout << " " << b.selecting.total_point << "\n";
+
+			Sleep(100);
+		} while ((a.selecting.total_point == b.selecting.total_point) || (!a.selecting.isAllCoinBroke() && !b.selecting.isAllCoinBroke()));
+
+		// 若所有硬币破碎，变动值固定为1
+		if (a.selecting.isAllCoinBroke()) { a.selecting.change = 1; }
+		if (b.selecting.isAllCoinBroke()) { b.selecting.change = 1; }
+
+		std::cout << "\n";
+	}
+
+	void makeDamage(ActionSlot& attacker, ActionSlot& target) {
 		initNum(attacker);
 		
 		setColor(15);
-		std::cout << "[日志] " << attacker.Data->Name << " 对 " << target.Data->Name << "使用了 ";
-		setSinColor(attacker.skill.Sin_Type);
-		std::cout << "「" << attacker.skill.Name << "」 \n\n";
+		std::cout << "[日志] " << attacker.Owner->Data->name << " 对 " << target.Owner->Data->name << " 使用了 ";
+		setSinColor(attacker.selecting.sin_type);
+		std::cout << "「" << attacker.selecting.name << "」 \n\n";
 		setColor(8);
 
 		// 计算等压
-		float diff = attacker.skill.Attack_Level - target.skill.Attack_Level;
-
-		// 总伤害
-		int total_damage = 0;
-
+		float diff = attacker.selecting.attack_level - target.selecting.attack_level;
 		// 增伤
 		float mul_1 = 1;	// 第一类乘算增伤
 		float mul_2 = 1;	// 第二类乘算增伤
 		float add_1 = 0;	// 第一类加算增伤
 		float add_2 = 0;	// 第二类加算增伤
-
+		// 创建伤害事件传输数据
 		DamageEventData data;
 		data.attacker = &attacker;
 		data.target = &target;
@@ -271,67 +285,55 @@ public:
 		data.mul_2 = &mul_2;
 		data.add_1 = &add_1;
 		data.add_2 = &add_2;
-		data.total_damage = &total_damage;
-
 		// 遍历每个硬币
-		for (size_t i = 0; i < attacker.skill.Coin.size(); i++)
+		for (size_t i = 0; i < attacker.selecting.coin_list.size(); i++)
 		{
-			data.coin = &attacker.skill.Coin[i];
-
+			data.coin = &attacker.selecting.coin_list[i];
+			Coin* current = &attacker.selecting.coin_list[i];
+			// 重置增伤数值
 			mul_1 = 1;
 			mul_2 = 1;
 			add_1 = 0;
 			add_2 = 0;
 
-			if (!attacker.skill.Coin[i].is_Broke || attacker.skill.Coin[i].Type == "Unbreakable")
+			if (!current->is_Broke || current->type == "Unbreakable")
 			{
 				std::cout << "[硬币] " << i + 1 << ":\n";
 
 				// 抗性
-				float resist = target.Data->Attack_Type_Resist.at(attacker.skill.Attack_Type);
-				if (target.status == Status::confusion) { resist = 2.0f; }
+				float resist = target.Owner->Data->resist.at(attacker.selecting.attack_type);
+				if (target.Owner->isConfused()) { resist = 2.0f; }
 
 				// 广播事件 伤害前
 				EventBus::get().dispatch(BattleEvent::BeforeDamage, &data);
 
 				// 投掷
-				attacker.rollCoinPoint(i);
-				EventBus::get().dispatch(BattleEvent::RollCoin, &data);
+				rollCoin(attacker, i);
 
 				// 目前币为正面
-				if (attacker.skill.Coin[i].current_Face)
+				if (current->current_Face)
 				{
 					// 目前总点数
-					attacker.skill.Point += attacker.skill.Change;
+					attacker.selecting.total_point += attacker.selecting.change;
 					// 目前币点数
-					attacker.skill.Coin[i].Point += attacker.skill.Point;
+					current->point += attacker.selecting.total_point;
 				}
 
 				// 计算本次伤害
-				attacker.skill.Coin[i].Damage = attacker.skill.Point;
+				current->damage = attacker.selecting.total_point;
 
 				// 当前硬币造成的伤害=当前硬币数值×第一类乘算增伤×第二类乘算增伤+第一类加算增伤+第二类加算增伤
-				
+
 				// 攻防差值
 				mul_1 += diff / (abs(diff) + 25);
 				// 暴击率
-				if (attacker.handleBreath()) { mul_1 += 0.2; EventBus::get().dispatch(BattleEvent::Critical, &data); }
+				if (attacker.Owner->handleBreath()) { mul_1 += 0.2; EventBus::get().dispatch(BattleEvent::Critical, &data); }
 				// 抗性
 				mul_1 += resist;
 				std::cout << "[日志] 抗性：";
-				if (resist > 1)
-				{
-					setColor(6);
-					std::cout << "脆弱";
-				}
-				else if (resist < 1)
-				{
-					std::cout << "抵抗";
-				}
-				else {
-					setColor(7);
-					std::cout << "一般";
-				}
+				if (resist > 1) { setColor(6); std::cout << "脆弱"; }
+				else if (resist < 1) { std::cout << "抵抗"; }
+				else { setColor(7); std::cout << "一般"; }
 				std::cout << " x" << resist << "\n";
 				setColor(8);
 
@@ -340,28 +342,28 @@ public:
 				setColor(15);
 				std::cout << "x" << (int)(mul_1 * 100) << "%\n";
 				setColor(8);
-				attacker.skill.Coin[i].Damage *= mul_1;
+				current->damage *= mul_1;
 				// 乘以第二类乘算增伤
-				attacker.skill.Coin[i].Damage *= mul_2;
+				current->damage *= mul_2;
 				// 加以第一类加算增伤
-				attacker.skill.Coin[i].Damage += add_1;
+				current->damage += add_1;
 				// 加以第二类加算增伤
-				attacker.skill.Coin[i].Damage += add_2;
+				current->damage += add_2;
 
 				// 检查伤害至少为1
-				if (attacker.skill.Coin[i].Damage <= 1) { attacker.skill.Coin[i].Damage = 1; }
+				if (current->damage < 1) { current->damage = 1; }
 
 				// 减少目标本硬币伤害的血量
-				target.health -= round(attacker.skill.Coin[i].Damage);
+				target.Owner->addHealth(-round(current->damage));
 
 				// 把当前币伤害加入总伤害
-				total_damage += round(attacker.skill.Coin[i].Damage);
+				attacker.selecting.total_damage += round(current->damage);
 
 				EventBus::get().dispatch(BattleEvent::Damage, &data);
 
 				std::cout << "[日志] 该硬币造成了 ";
 				setColor(15);
-				std::cout << round(attacker.skill.Coin[i].Damage);
+				std::cout << round(current->damage);
 				setColor(8);
 				std::cout << " 点伤害。" << "\n";
 
@@ -371,15 +373,15 @@ public:
 				std::cout << "\n";
 			}
 
-			Sleep(150);
+			Sleep(100);
 		}
 
-		printEachCoin(attacker.skill);
+		printEachCoin(attacker);
 		printEachDamage(attacker);
 
 		std::cout << "\n[日志] 该技能最终造成了 ";
 		setColor(15);
-		std::cout << total_damage;
+		std::cout << attacker.selecting.total_damage;
 		setColor(8);
 		std::cout << " 点伤害。" << "\n\n";
 	}
@@ -392,7 +394,6 @@ private:
 			return a.priority < b.priority;
 		}
 	};
-
 	// priority_queue 模板参数：<元素类型, 底层容器类型, 比较类型>
 	std::priority_queue<Action, std::vector<Action>, CompareAction> queue;
 };

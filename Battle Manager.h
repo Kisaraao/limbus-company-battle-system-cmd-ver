@@ -17,24 +17,18 @@ extern bool Running;
 class BattleManager
 {
 public:
-	BattleManager(CharacterData* player, CharacterData* enemy) {
-		Player.loadCharacterData(player);
-		Enemy.loadCharacterData(enemy);
+	BattleManager(CharacterTemplate* player, CharacterTemplate* enemy, int player_slots, int enemy_slots)
+			: Player(CharacterInstance(player)), Enemy(CharacterInstance(enemy)), player_slots_size(player_slots), enemy_slots_size(enemy_slots) {}
+	~BattleManager() = default;
 
-		round = 0;
-		for (size_t i = 0; i < dashboard.size(); i++)
-		{
-			Player.rollWeight();
-			dashboard[i] = Player.weight;
-		}
-
+	void EventSub() {
 		EventBus::get().subscribe(BattleEvent::BeforeDamage, [this](void* data) {
 			// 特色文本Before
 			DamageEventData* Data = static_cast<DamageEventData*>(data);
 			if (!Data->coin->before.empty())
 			{
 				setColor(15);
-				std::cout << "[台词] " << Data->attacker->Data->Name << "：" << "“" << Data->coin->before << "”\n";
+				std::cout << "[台词] " << Data->attacker->Owner->Data->name << "：" << "“" << Data->coin->before << "”\n";
 				setColor(8);
 			}
 			});
@@ -45,11 +39,11 @@ public:
 			if (!Data->coin->after.empty())
 			{
 				setColor(15);
-				std::cout << "[台词] " << Data->attacker->Data->Name << "：" << "“" << Data->coin->after << "”\n";
+				std::cout << "[台词] " << Data->attacker->Owner->Data->name << "：" << "“" << Data->coin->after << "”\n";
 				setColor(8);
 			}
 			//检测是否越过混乱阈值
-			Data->target->checkConfusion();
+			Data->target->Owner->checkConfusion();
 			});
 
 		EventBus::get().subscribe(BattleEvent::TurnEnd, [this](void* data) {
@@ -59,17 +53,18 @@ public:
 
 		EventBus::get().subscribe(BattleEvent::Damage, [this](void* data) {
 			DamageEventData* Data = static_cast<DamageEventData*>(data);
-			BattleCharacter* target = nullptr;
+			CharacterInstance* target = nullptr;
 
-			*Data->total_damage += Data->target->handleRupture();
-			Data->target->handleSink();
+			Data->attacker->selecting.total_damage += Data->target->Owner->handleRupture();
+			Data->target->Owner->handleSink();
 
 			// 处理Effect
 			if (!Data->coin->effects.empty())
 			{
 				for (auto& ptr : Data->coin->effects) {
 
-					if (ptr.target == "enemy") { target = Data->target; } else if (ptr.target == "self") { target = Data->attacker; }
+					if (ptr.target == "enemy") { target = Data->target->Owner; }
+					else if (ptr.target == "self") { target = Data->attacker->Owner; }
 
 					handleEffect(ptr, target);
 
@@ -79,7 +74,7 @@ public:
 						setColor(6);
 						std::cout << "震颤引爆！\n";
 						setColor(8);
-						*Data->total_damage += target->handleTremor();
+						Data->attacker->selecting.total_damage += target->handleTremor();
 					}
 					if (ptr.type == "burn-explode")
 					{
@@ -87,7 +82,7 @@ public:
 						setColor(12);
 						std::cout << "烧伤引爆！\n";
 						setColor(8);
-						*Data->total_damage += target->burnExplode();
+						Data->attacker->selecting.total_damage += target->burnExplode();
 					}
 					if (ptr.type == "sink-explode")
 					{
@@ -95,7 +90,7 @@ public:
 						setColor(1);
 						std::cout << "沉沦泛滥！\n";
 						setColor(8);
-						*Data->total_damage += target->sinkExplode();
+						Data->attacker->selecting.total_damage += target->sinkExplode();
 					}
 				}
 				setColor(8);
@@ -103,8 +98,8 @@ public:
 			});
 
 		EventBus::get().subscribe(BattleEvent::RollCoin, [this](void* data) {
-			DamageEventData* Data = static_cast<DamageEventData*>(data);
-			Data->attacker->handleBleed();
+			CombatEventData* Data = static_cast<CombatEventData*>(data);
+			Data->a->handleBleed();
 			});
 
 		EventBus::get().subscribe(BattleEvent::Critical, [this](void* data) {
@@ -113,55 +108,47 @@ public:
 			std::cout << "暴击！\n";
 			setColor(8);
 			});
-
-		EventBus::get().subscribe(BattleEvent::BeforeCombat, [this](void* data) {
-			});
-
-		EventBus::get().subscribe(BattleEvent::AfterCombat, [this](void* data) {
-			});
 	}
-	~BattleManager() = default;
-
-	void handleEffect(const Effect& ptr, BattleCharacter* target) {
+	void handleEffect(const CoinEffect& ptr, CharacterInstance* target) {
 		if (ptr.type == "burn")
 		{
 			target->addBurn(ptr.value);
-			std::cout << "[效果] ：" << target->Data->Name << " -> " << "施加 ";
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(12);
 			std::cout << "烧伤[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "bleed")
 		{
 			target->addBleed(ptr.value);
-			std::cout << "[效果] ：" << target->Data->Name << " -> " << "施加 ";
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(4);
 			std::cout << "流血[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "rupture")
 		{
 			target->addRupture(ptr.value);
-			std::cout << "[效果] ：" << target->Data->Name << " -> " << "施加 ";
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(10);
 			std::cout << "破裂[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "sink")
 		{
 			target->addSink(ptr.value);
-			std::cout << "[效果] ：" << target->Data->Name << " -> " << "施加 ";
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(1);
 			std::cout << "沉沦[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "tremor")
 		{
 			target->addTremor(ptr.value);
-			std::cout << "[效果] ：" << target->Data->Name << " -> " << "施加 ";
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(6);
 			std::cout << "震颤[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "breath")
 		{
 			target->addBreath(ptr.value);
-			std::cout << "[效果] ：" << target->Data->Name << " -> " << "施加 ";
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(15);
 			std::cout << "呼吸法[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
@@ -169,66 +156,48 @@ public:
 		if (ptr.type == "sanity")
 		{
 			target->addSanity(ptr.value.x);
-			std::cout << "[效果] 理智加值：" << target->Data->Name << " -> " << ptr.value.x << "\n";
+			std::cout << "[效果] 理智加值 " << target->Data->name << " -> " << ptr.value.x << "\n";
 		}
 		if (ptr.type == "health")
 		{
 			target->addHealth(ptr.value.x);
-			std::cout << "[效果] 血量加值：" << target->Data->Name << " -> " << ptr.value.x << "\n";
+			std::cout << "[效果] 血量加值 " << target->Data->name << " -> " << ptr.value.x << "\n";
 		}
 		setColor(8);
 	}
 
 	enum class State
 	{
-		input,
+		select,
 		combat,
 		calc
 	};
 
 	void on_enter() {
-		setColor(8);
-		switch (state)
+		for (size_t i = 0; i < player_slots_size; i++)
 		{
-		case BattleManager::State::input:
-			EventBus::get().dispatch(BattleEvent::TurnStart, nullptr);
-
-			//处理混乱
-			Player.handleConfusion();
-			Enemy.handleConfusion();
-
-			std::cout << "回合数： " << round + 1 << "\n\n";
-			break;
-		case BattleManager::State::combat:
-			break;
-		case BattleManager::State::calc:
-			break;
-		default:
-			break;
+			Player_Slots.push_back(ActionSlot(&Player));
 		}
+		for (size_t i = 0; i < enemy_slots_size; i++)
+		{
+			Enemy_Slots.push_back(ActionSlot(&Enemy));
+		}
+		EventSub();
+		round = 0;
+		state = State::select;
 	}
 
 	void on_update() {
 		switch (state)
 		{
-		case BattleManager::State::input:
-			Enemy.rollWeight();
-			Enemy.choice = Enemy.weight;
-			Enemy.setCurrentSkill(Enemy.choice);
-			if (round == 0)
-			{
-				for (size_t i = 0; i < dashboard.size(); i++)
-				{
-					Player.rollWeight();
-					dashboard[i] = Player.weight;
-				}
-			}
-			else 
-			{
-				if (choice == 1) { dashboard[1] = dashboard[0]; }
-				Player.rollWeight();
-				dashboard[0] = Player.weight;
-			}
+		case BattleManager::State::select:
+			// 广播回合开始
+			EventBus::get().dispatch(BattleEvent::TurnStart, nullptr);
+			// 处理混乱，解除混乱
+			Player.handleConfusion();
+			Enemy.handleConfusion();
+			// 敌人默认使用所有行动槽下位的技能
+			for (auto& ptr : Enemy_Slots) { ptr.choiceSkill(2); }
 			break;
 		case BattleManager::State::combat:
 			break;
@@ -242,85 +211,82 @@ public:
 	void on_draw() {
 		switch (state)
 		{
-		case BattleManager::State::input:
+		case BattleManager::State::select:
+			// 输出回合数
+			std::cout << "回合数： " << round + 1 << "\n\n";
+			// 输出双方状态
 			showCharacterStatus(Player);
 			showEffectStatus(Player);
 			showCharacterStatus(Enemy);
 			showEffectStatus(Enemy);
-
-			if (Enemy.status != Status::confusion)
+			// 若敌人不处于混乱，输出敌人使用的所有技能
+			if (!Enemy.isConfused())
 			{
-				std::cout << Enemy.Data->Name << " 正在使用： \n";
-				showSkillStatus(Enemy.skill);
-			}
-
-			if (Player.status != Status::confusion)
-			{
-				std::cout << "\n——————————————仪表盘——————————————" << "\n\n";
-				for (size_t i = 0; i < dashboard.size(); i++)
+				std::cout << Enemy.Data->name << " 正在使用： \n";
+				for (auto& ptr : Enemy_Slots)
 				{
-					setColor(15);
-					std::cout << i + 1 << ".";
-					showSkillStatus(Player.Data->Skill_List[dashboard[i]]);
-					std::cout << "\n";
+					showSkillStatus(ptr.selecting);
 				}
-				std::cout << "———————————————————————————————" << "\n";
+			}
+			// 若敌人不处于混乱，输出所有可用行动槽
+			if (!Player.isConfused())
+			{
+				for (size_t j = 0; j < Player_Slots.size(); j++)
+				{
+					std::cout << "\n——————————————仪表盘——————————————" << "\n\n";
+					for (size_t i = 0; i < Player_Slots[j].Dashboard.size(); i++)
+					{
+						setColor(15);
+						std::cout << i + 1 << ".";
+						showSkillStatus(Player_Slots[j].Dashboard[i]);
+						std::cout << "\n";
+					}
+					std::cout << "———————————————————————————————" << "\n";
+				}
 				std::cout << "请选择技能： ";
 				std::cin >> choice;
-				choice--;
-				Player.choice = dashboard[choice];
-				Player.setCurrentSkill(Player.choice);
+				for (auto& ptr : Player_Slots)
+				{
+					ptr.choiceSkill(choice);
+				}
 			}
+			state = State::combat;
 			break;
 		case BattleManager::State::combat:
-
 			// 重复执行队列最前的action，然后pop掉，直到队列为空
-			if (Player.status != Status::confusion && Enemy.status != Status::confusion)
+			if (!Player.isConfused() && !Enemy.isConfused())
 			{
-				action_queue.addAction(ActionType::Combat, Player, Enemy, 1);
+				for (size_t i = 0; i < Player_Slots.size(); i++)
+				{
+					action_queue.addAction(ActionType::Combat, Player_Slots[i], Enemy_Slots[i], i);
+				}
 			}
-			else if (Player.status == Status::confusion) // 玩家混乱
+			else if (Player.isConfused()) // 玩家混乱
 			{
-				action_queue.addAction(ActionType::Unilateral, Enemy, Player, 1);
+				for (size_t i = 0; i < Player_Slots.size(); i++)
+				{
+					action_queue.addAction(ActionType::Unilateral, Enemy_Slots[i], Player_Slots[i], i);
+				}
 			}
-			else if (Enemy.status == Status::confusion)	// 敌人混乱
+			else if (Enemy.isConfused())	// 敌人混乱
 			{
-				action_queue.addAction(ActionType::Unilateral, Player, Enemy, 1);
+				for (size_t i = 0; i < Player_Slots.size(); i++)
+				{
+					action_queue.addAction(ActionType::Unilateral, Player_Slots[i], Enemy_Slots[i], i);
+				}
 			}
-
 			// 执行
 			while (!action_queue.isEmpty())
 			{
 				action_queue.executeAction();
 			}
 
-			break;
-		case BattleManager::State::calc:
-			break;
-		default:
-			break;
-		}
-	}
-
-	void on_exit() {
-		switch (state)
-		{
-		case BattleManager::State::input:
-			state = State::combat;
-			break;
-		case BattleManager::State::combat:
 			//检测死亡，结束游戏
 			if (Player.checkDeath() || Enemy.checkDeath())
 			{
 				setColor(4);
-				if (Player.checkDeath())
-				{
-					std::cout << "[日志]" << Player.Data->Name << " 死了！" << "\n";
-				}
-				else
-				{
-					std::cout << "[日志]" << Enemy.Data->Name << " 死了！" << "\n";
-				}
+				if (Player.checkDeath()) { std::cout << "[日志]" << Player.Data->name << " 死了！" << "\n"; }
+				else { std::cout << "[日志]" << Enemy.Data->name << " 死了！" << "\n"; }
 				setColor(8);
 				Running = false;
 			}
@@ -331,62 +297,67 @@ public:
 			++round;
 			system("pause");
 			system("cls");
-			state = State::input;
+			state = State::select;
 			break;
 		default:
 			break;
 		}
 	}
 
-	void showCharacterStatus(const BattleCharacter& ch) {
+	void on_exit() {}
+
+	void showCharacterStatus(CharacterInstance& ch) {
 		setColor(15);
-		std::cout << ch.Data->Name << " ";
+		std::cout << ch.Data->name << " ";
 		setColor(8);
-		std::cout << "等级： ";
+
+		std::cout << "等级：";
 		setColor(15);
-		std::cout << ch.Data->Level << " ";
+		std::cout << ch.Data->level << " ";
 		setColor(8);
-		std::cout << "当前血量： ";
+
+		std::cout << "血量：";
 		setColor(15);
-		std::cout << ch.health << " / " << ch.Data->Health.y << " ";
+		std::cout << ch.health << " / " << ch.Data->health.y << " ";
 		setColor(8);
-		std::cout << "当前理智： ";
-		if (ch.sanity < 0)
-		{
-			setColor(4);
-		}else
-		{
-			setColor(9);
-		}
+
+		std::cout << "理智：";
+		if (ch.sanity < 0) { setColor(4); }
+		else { setColor(9); }
 		std::cout << ch.sanity << " ";
 		setColor(8);
-		std::cout << "当前速度： " << ch.speed << "\n";
-		std::cout << "特性关键词： ";
-		for (size_t i = 0; i < ch.Data->Tag_List.size(); i++)
-		{
-			std::cout << "[" << ch.Data->Tag_List[i] << "] ";
-		}
-		std::cout << "下一次混乱： ";
+
+		std::cout << "当前速度：" << ch.speed << " ";
+
+		std::cout << "最前混乱阈值：";
 		if (!ch.confusion.empty()) {
-			std::cout << ch.Data->Health.y * ch.confusion.front();
-		}else {
-			std::cout << "无";
+			setColor(6);
+			std::cout << (int)(ch.Data->health.y * ch.confusion.front()) << "\n";
+			setColor(8);
 		}
-		if (ch.status == Status::confusion)
+		else { std::cout << "无\n"; }
+
+		std::cout << "特性关键词：";
+		for (size_t i = 0; i < ch.Data->tag_list.size(); i++)
+		{
+			std::cout << "[" << ch.Data->tag_list[i] << "]";
+		}
+
+		if (ch.isConfused())
 		{
 			setColor(4);
-			std::cout << "\n！陷入混乱！";
+			std::cout << "\n			！陷入混乱！";
 			setColor(8);
 		}
 		std::cout << "\n";
 	}
 
 	void showSkillStatus(const Skill& skl) {
-		setSinColor(skl.Sin_Type);
-		std::cout << "「" << skl.Name << "」 ";
-		for (auto& ptr : skl.Coin)
+		setSinColor(skl.sin_type);
+		std::cout << "「" << skl.name << "」";
+		for (auto& ptr : skl.coin_list)
 		{
-			if (ptr.Type == "Unbreakable")
+			if (ptr.type == "Unbreakable")
 			{
 				setColor(12);
 				std::cout << "■";
@@ -399,57 +370,62 @@ public:
 			setColor(8);
 		}
 		setColor(8);
-		std::cout << " 攻击等级： " << skl.Attack_Level << " " << "攻击类型： " << attacktype_to_string.find(skl.Attack_Type)->second << " " << "罪孽类型： ";
-		//std::cout << "基础威力： " << skl.Base << " "
-		//	<< "变动威力： " << skl.Change << " "
-		//	<< "攻击类型： " << attacktype_to_string.find(skl.Attack_Type)->second << " " << "罪孽类型： ";
-		setSinColor(skl.Sin_Type);
-		std::cout << sintype_to_string.find(skl.Sin_Type)->second << "\n";
+		std::cout << " 攻击等级：";
+		setColor(15);
+		std::cout << skl.attack_level;
+		setColor(8);
+		std::cout << " 攻击类型：" << skl.attack_type << " " << "罪孽类型：";
+		setSinColor(skl.sin_type);
+		std::cout << skl.sin_type << "\n";
 		setColor(8);
 	}
 
-	void showEffectStatus(const BattleCharacter& ch) {
+	void showEffectStatus(CharacterInstance& ch) {
 		if (ch.breath.x != 0 && ch.breath.y != 0)
 		{
 			setColor(15);
-			std::cout << "呼吸法:[" << ch.breath.x << "][" << ch.breath.y << "] ";
+			std::cout << "呼吸法[" << ch.breath.x << "][" << ch.breath.y << "] ";
 		}
 		if (ch.burn.x != 0 && ch.burn.y != 0)
 		{
 			setColor(12);
-			std::cout << "烧伤:[" << ch.burn.x << "][" << ch.burn.y << "] ";
+			std::cout << "烧伤[" << ch.burn.x << "][" << ch.burn.y << "] ";
 		}
 		if (ch.bleed.x != 0 && ch.bleed.y != 0)
 		{
 			setColor(4);
-			std::cout << "流血:[" << ch.bleed.x << "][" << ch.bleed.y << "] ";
+			std::cout << "流血[" << ch.bleed.x << "][" << ch.bleed.y << "] ";
 		}
 		if (ch.rupture.x != 0 && ch.rupture.y != 0)
 		{
 			setColor(10);
-			std::cout << "破裂:[" << ch.rupture.x << "][" << ch.rupture.y << "] ";
+			std::cout << "破裂[" << ch.rupture.x << "][" << ch.rupture.y << "] ";
 		}
 		if (ch.sink.x != 0 && ch.sink.y != 0)
 		{
 			setColor(1);
-			std::cout << "沉沦:[" << ch.sink.x << "][" << ch.sink.y << "] ";
+			std::cout << "沉沦[" << ch.sink.x << "][" << ch.sink.y << "] ";
 		}
 		if (ch.tremor.x != 0 && ch.tremor.y != 0)
 		{
 			setColor(14);
-			std::cout << "震颤:[" << ch.tremor.x << "][" << ch.tremor.y << "]";
+			std::cout << "震颤[" << ch.tremor.x << "][" << ch.tremor.y << "]";
 		}
 		std::cout << "\n\n";
 		setColor(8);
 	}
 
 private:
-	BattleCharacter Player;
-	BattleCharacter Enemy;
-	State state = State::input;
+	CharacterInstance Player;
+	CharacterInstance Enemy;
+
+	std::vector<ActionSlot> Player_Slots;
+	int player_slots_size;
+	std::vector<ActionSlot> Enemy_Slots;
+	int enemy_slots_size;
+
+	State state;
 	int round;
 	int choice;
-	std::array<int, 2> dashboard;
-
 	ActionQueue action_queue;
 };

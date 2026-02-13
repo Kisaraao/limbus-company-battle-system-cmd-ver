@@ -21,13 +21,13 @@ public:
 		}
 
 		std::string path = "script/Character/" + name + ".xml";
-		CharacterData* newCharacter = new CharacterData();
+		CharacterTemplate* ch = new CharacterTemplate();
 
-		xml.loadXML(path, newCharacter);
-		character_pool[name] = newCharacter;
+		xml.loadXML(path, ch);
+		character_pool[name] = ch;
 	}
 
-	CharacterData* get(const std::string& name) {
+	CharacterTemplate* get(const std::string& name) {
 		auto it = character_pool.find(name);
 		if (it != character_pool.end()) {
 			return it->second;
@@ -36,6 +36,6 @@ public:
 	}
 
 private:
-	std::unordered_map<std::string, CharacterData*> character_pool;
+	std::unordered_map<std::string, CharacterTemplate*> character_pool;
 	CharacterXML xml;
 };
