@@ -100,26 +100,26 @@ public:
 				{
 					for (auto& ptr : skl.child("Combat").child("Win").children("Effect"))
 					{
-						CoinEffect effect;
-						effect.target = ptr.attribute("target").as_string();
-						effect.type = ptr.attribute("type").as_string();
-						effect.mode = ptr.attribute("mode").as_string();
-						effect.value.x = ptr.attribute("x").as_float(0.0f);
-						effect.value.y = ptr.attribute("y").as_float(0.0f);
-						skill.combat_win.push_back(effect);
+						CoinEffect win;
+						win.target = ptr.attribute("target").as_string();
+						win.type = ptr.attribute("type").as_string();
+						win.mode = ptr.attribute("mode").as_string();
+						win.value.x = ptr.attribute("x").as_float(0.0f);
+						win.value.y = ptr.attribute("y").as_float(0.0f);
+						skill.combat_win.push_back(win);
 					}
 				}
 				if (!skl.child("Combat").child("Lose").empty())
 				{
 					for (auto& ptr : skl.child("Combat").child("Lose").children("Effect"))
 					{
-						CoinEffect effect;
-						effect.target = ptr.attribute("target").as_string();
-						effect.type = ptr.attribute("type").as_string();
-						effect.mode = ptr.attribute("mode").as_string();
-						effect.value.x = ptr.attribute("x").as_float(0.0f);
-						effect.value.y = ptr.attribute("y").as_float(0.0f);
-						skill.combat_win.push_back(effect);
+						CoinEffect lose;
+						lose.target = ptr.attribute("target").as_string();
+						lose.type = ptr.attribute("type").as_string();
+						lose.mode = ptr.attribute("mode").as_string();
+						lose.value.x = ptr.attribute("x").as_float(0.0f);
+						lose.value.y = ptr.attribute("y").as_float(0.0f);
+						skill.combat_lose.push_back(lose);
 					}
 				}
 			}

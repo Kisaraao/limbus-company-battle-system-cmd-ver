@@ -15,7 +15,7 @@
 
 extern bool Running;
 
-void addEffect(CoinEffect& ptr, CharacterInstance& target) {
+void addEffect(CoinEffect& ptr,CharacterInstance& target) {
 	if (ptr.type == "protect") { EffectManager::Get().addEffect(target.protect, ptr, target, "守护", 9); target.rounder_protect = 0; }
 	if (ptr.type == "damage_enhance") { EffectManager::Get().addEffect(target.damage_enhance, ptr, target, "伤害强化", 4); target.rounder_enhance = 0; }
 	if (ptr.type == "damage_weak") { EffectManager::Get().addEffect(target.damage_weak, ptr, target, "伤害弱化", 9); target.rounder_weak = 0; }
@@ -125,9 +125,11 @@ public:
 			{
 				for (auto& ptr : Data->coin->effects) {
 
-					if (ptr.target == "enemy") { target = Data->target->Owner; }
-					else if (ptr.target == "self") { target = Data->attacker->Owner; }
+					if (ptr.target == "self") {  target = Data->attacker->Owner;}
+					else  { target = Data->target->Owner; }
+
 					addEffect(ptr, *target);
+
 					// 重投
 					if (ptr.type == "reroll")
 					{
@@ -144,6 +146,8 @@ public:
 					// 震颤引爆
 					if (ptr.type == "tremor-explode")
 					{
+						std::cout << Data->attacker->Owner->Data->name << "\n";
+						std::cout << Data->target->Owner->Data->name << "\n";
 						std::cout << "[效果] ";
 						setColor(6);
 						std::cout << "震颤引爆！\n";
@@ -154,7 +158,7 @@ public:
 							Data->attacker->selecting.total_damage += vec.value().x;
 							target->moveFrontConfusion(vec.value().y);
 							setColor(6);
-							std::cout << "[震颤] " << Data->target->Owner->Data->name << " 血量 -" << vec.value().x << " 混乱阈值 -" << vec.value().y  << "\n";
+							std::cout << "[震颤] " << target->Data->name << " 血量 -" << vec.value().x << " 混乱阈值 -" << vec.value().y  << "\n";
 							setColor(8);
 						}
 					}
@@ -170,7 +174,7 @@ public:
 							target->addHealth(-vec.value());
 							Data->attacker->selecting.total_damage += vec.value();
 							setColor(12);
-							std::cout << "[烧伤] " << Data->target->Owner->Data->name << " 血量 -" << vec.value() << "\n";
+							std::cout << "[烧伤] " << target->Data->name << " 血量 -" << vec.value() << "\n";
 							setColor(8);
 						}
 					}
@@ -187,7 +191,7 @@ public:
 							Data->attacker->selecting.total_damage += vec.value().x;
 							target->addSanity(-vec.value().y);
 							setColor(1);
-							std::cout << "[沉沦] " << Data->target->Owner->Data->name << " 血量 -" << vec.value().x << " 理智 -" << vec.value().y << "\n";
+							std::cout << "[沉沦] " << target->Data->name << " 血量 -" << vec.value().x << " 理智 -" << vec.value().y << "\n";
 							setColor(8);
 						}
 					}
@@ -234,13 +238,11 @@ public:
 			AfterCombatEventData* Data = static_cast<AfterCombatEventData*>(data);
 			for (auto& ptr : Data->winner->selecting.combat_win)
 			{
-				if (ptr.target == "self") { addEffect(ptr, *Data->winner->Owner); }
-				else { addEffect(ptr, *Data->loser->Owner); }
+				addEffect(ptr, *Data->winner->Owner);
 			}
 			for (auto& ptr : Data->loser->selecting.combat_lose)
 			{
-				if (ptr.target == "self") { addEffect(ptr, *Data->loser->Owner); }
-				else { addEffect(ptr, *Data->winner->Owner); }
+				addEffect(ptr, *Data->loser->Owner);
 			}
 			});
 	}

@@ -102,9 +102,6 @@ public:
 		else if (sanity < Data->sanity.x)
 		{
 			sanity = Data->sanity.x;
-			std::cout << "[日志] " << Data->name << "陷入了恐慌。\n";
-			sanity = 0;
-			Effect::add(sink, Vector2(0, 5));
 		}
 	}
 	void addHealth(int num) {

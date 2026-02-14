@@ -335,10 +335,6 @@ public:
 				// 抗性
 				float resist = target.Owner->Data->resist.at(attacker.selecting.attack_type);
 				if (target.Owner->isConfused()) { resist = 2.0f; }
-				if (resist < 1.0f)
-				{
-					resist = -resist;
-				}
 
 				// 广播事件 伤害前
 				EventBus::get().dispatch(BattleEvent::BeforeDamage, &data);
