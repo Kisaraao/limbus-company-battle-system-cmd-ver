@@ -50,6 +50,10 @@ public:
 		confusion = Data->confusion;
 		confusion_round = 0;
 	}
+	void moveFrontConfusion(float val) {
+		confusion.front() += static_cast<float>(val / Data->health.y);
+		if (confusion.front() > Data->health.y) { confusion.front() = 1.0f; }
+	}
 	void handleConfusion() {
 		if (status == Status::Confusion)
 		{
@@ -69,6 +73,10 @@ public:
 		{
 			if (status != Status::Confusion && status != Status::Dead)
 			{
+				std::cout << "[日志] " << Data->name;
+				setColor(6);
+				std::cout << " 陷入混乱！\n";
+				setColor(8);
 				status = Status::Confusion;
 			}
 			confusion.pop();
@@ -94,9 +102,9 @@ public:
 		else if (sanity < Data->sanity.x)
 		{
 			sanity = Data->sanity.x;
-			//std::cout << "[日志] " << Data->name << "陷入了恐慌。\n";
-			//sanity = 0;
-			//addSink(Vector2(0, 10));
+			std::cout << "[日志] " << Data->name << "陷入了恐慌。\n";
+			sanity = 0;
+			Effect::add(sink, Vector2(0, 5));
 		}
 	}
 	void addHealth(int num) {
@@ -112,197 +120,11 @@ public:
 	}
 	bool isConfused() const { return status == Status::Confusion; }
 public:
-	// 效果 TODO: 简化
+	// 效果
 	Vector2 burn = { 0, 0 };
-	void addBurn(const Vector2& vec) {
-		burn += vec;
-		checkOver(burn);
-		keepAble(burn);
-	}
-	int handleBurn() {
-		int damage = 0;
-		if (burn.y != 0)
-		{
-			--burn.y;
-			addHealth(-burn.x);
-			std::cout << "[日志] " << Data->name << " 受到 " << burn.x << " 点烧伤伤害" << " 还剩 " << burn.y << " 层烧伤层数。" << "\n";
-			damage = -burn.x;
-			if (burn.y == 0)
-			{
-				burn.x = 0;
-			}
-		}
-		return damage;
-	}
-	int burnExplode() {
-		int damage = 0;
-		if (burn.x != 0 && burn.y != 0)
-		{
-			damage = round(burn.y * burn.x);
-			std::cout << "[日志] " << Data->name << " 受到 " << damage << " 点烧伤伤害。\n";
-			addHealth(-damage);
-			burn = { 0,0 };
-		}
-		return damage;
-	}
-
 	Vector2 bleed = { 0, 0 };
-	void addBleed(const Vector2& vec) {
-		bleed += vec;
-		checkOver(bleed);
-		keepAble(bleed);
-	}
-	int handleBleed() {
-		int damage = 0;
-		if (bleed.y > 0)
-		{
-			--bleed.y;
-			addHealth(-bleed.x);
-			std::cout << "[日志] " << Data->name << " 受到 " << bleed.x << " 点流血伤害" << " 还剩 " << bleed.y << " 层流血层数。" << "\n";
-			damage = bleed.x;
-			if (bleed.y == 0)
-			{
-				bleed.x = 0;
-			}
-		}
-		else
-		{
-			bleed = { 0,0 };
-		}
-		return damage;
-	}
-
 	Vector2 rupture = { 0, 0 };
-	void addRupture(const Vector2& vec) {
-		rupture += vec;
-		checkOver(rupture);
-		keepAble(rupture);
-	}
-	int handleRupture() {
-		int damage = 0;
-		if (rupture.y > 0)
-		{
-			--rupture.y;
-			addHealth(-rupture.x);
-			std::cout << "[日志] " << Data->name << " 受到 " << rupture.x << " 点破裂伤害" << " 还剩 " << rupture.y << " 层破裂层数。" << "\n";
-			damage = rupture.x;
-			if (rupture.y == 0)
-			{
-				rupture.x = 0;
-			}
-		}
-		else
-		{
-			rupture = { 0,0 };
-		}
-		return damage;
-	}
-
 	Vector2 sink = { 0, 0 };
-	void addSink(const Vector2& vec) {
-		sink += vec;
-		checkOver(sink);
-		keepAble(sink);
-	}
-	void handleSink() {
-		if (sink.y > 0)
-		{
-			--sink.y;
-			addSanity(-sink.x);
-			std::cout << "[日志] " << Data->name << " 受到 " << sink.x << " 点沉沦理智降低" << " 还剩 " << sink.y << " 层沉沦层数。" << "\n";
-			if (sink.y == 0)
-			{
-				sink.x = 0;
-			}
-		}
-		else
-		{
-			sink = { 0,0 };
-		}
-	}
-	int sinkExplode() {
-		int damage = 0;
-		int san_damage = 0;
-		if (sink.x != 0 && sink.y != 0)
-		{
-			san_damage = sink.y * sink.x;
-			if (san_damage > sanity - Data->sanity.x)
-			{
-				damage = round(san_damage - (sanity - Data->sanity.x));
-				san_damage = sanity - Data->sanity.x;
-
-				addSanity(-(sanity - Data->sanity.x));
-				addHealth(-damage);
-			}
-			else
-			{
-				addSanity(-san_damage);
-			}
-			std::cout << "[日志] " << Data->name << " 受到 " << san_damage << " 点理智伤害与 " << damage << " 点的溢出转换伤害。\n";
-			sink = { 0,0 };
-		}
-		return damage;
-	}
-
 	Vector2 tremor = { 0, 0 };
-	void addTremor(const Vector2& vec) {
-		tremor += vec;
-		checkOver(tremor);
-		keepAble(tremor);
-	}
-	int handleTremor() {
-		int damage = 0;
-		if (tremor.y > 0)
-		{
-			--tremor.y;
-			if (confusion.empty())
-			{
-				damage = round(tremor.x / 2);
-				std::cout << "[日志] " << Data->name << " 受到 " << damage << " 点震颤爆发伤害" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
-				addHealth(-damage);
-			}
-			else {
-				confusion.front() += static_cast<float>(tremor.x / Data->health.y);
-				std::cout << "[日志] " << Data->name << " 受到 " << tremor.x << " 点混乱阈值前移" << " 还剩 " << tremor.y << " 层震颤层数。" << "\n";
-			}
-			if (tremor.y == 0)
-			{
-				tremor.x = 0;
-			}
-		}
-		else
-		{
-			tremor = { 0,0 };
-		}
-		return damage;
-	}
-
 	Vector2 breath = { 0,0 };
-	void addBreath(const Vector2& vec) {
-		breath += vec;
-		checkOver(breath);
-		keepAble(breath);
-	}
-	bool handleBreath() {
-		if (breath.x != 0 && breath.y != 0)
-		{
-			bool flag = false;
-			if (breath.x * 0.05 > 1)
-			{
-				flag = RandomManager::get().probability(1);
-			}
-			else
-			{
-				flag = RandomManager::get().probability(breath.x * 0.05);
-			}
-			if (flag)
-			{
-				--breath.y;
-				std::cout << "[日志] " << Data->name << " 造成暴击 还剩 " << breath.y << " 层呼吸法层数。" << "\n";
-				return true;
-			}
-			else { return false; }
-		}
-		return false;
-	}
 };

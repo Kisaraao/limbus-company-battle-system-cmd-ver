@@ -47,16 +47,43 @@ public:
 			});
 
 		EventBus::get().subscribe(BattleEvent::TurnEnd, [this](void* data) {
-			Player.handleBurn();
-			Enemy.handleBurn();
+			auto dmg = Effect::active::tick(Player.burn);
+			if (dmg.has_value()) {
+				Player.addHealth(-dmg.value()); 
+				setColor(12);
+				std::cout << "[烧伤] " << Player.Data->name << " 血量 -" << dmg.value() << "\n";
+				setColor(8);
+			}
+			dmg = Effect::active::tick(Enemy.burn);
+			if (dmg.has_value()) {
+				Enemy.addHealth(-dmg.value()); 
+				setColor(12);
+				std::cout << "[烧伤] " << Enemy.Data->name << " 血量 -" << dmg.value() << "\n";
+				setColor(8);
+			}
 			});
 
 		EventBus::get().subscribe(BattleEvent::Damage, [this](void* data) {
 			DamageEventData* Data = static_cast<DamageEventData*>(data);
 			CharacterInstance* target = nullptr;
 
-			Data->attacker->selecting.total_damage += Data->target->Owner->handleRupture();
-			Data->target->Owner->handleSink();
+			// 处理破裂
+			auto dmg = Effect::active::tick(Data->target->Owner->rupture);
+			if (dmg.has_value()) {
+				Data->target->Owner->addHealth(-dmg.value());
+				Data->attacker->selecting.total_damage += dmg.value();
+				setColor(10);
+				std::cout << "[破裂] " << Data->target->Owner->Data->name << " 血量 -" << dmg.value() << "\n";
+				setColor(8);
+			}
+			// 处理沉沦
+			dmg = Effect::active::tick(Data->target->Owner->sink);
+			if (dmg.has_value()) {
+				Data->target->Owner->addSanity(-dmg.value()); 
+				setColor(1);
+				std::cout << "[沉沦] " << Data->target->Owner->Data->name << " 理智 -" << dmg.value() << "\n";
+				setColor(8);
+			}
 
 			// 处理Effect
 			if (!Data->coin->effects.empty())
@@ -65,32 +92,56 @@ public:
 
 					if (ptr.target == "enemy") { target = Data->target->Owner; }
 					else if (ptr.target == "self") { target = Data->attacker->Owner; }
-
 					handleEffect(ptr, target);
-
+					// 震颤引爆
 					if (ptr.type == "tremor-explode")
 					{
 						std::cout << "[效果] ";
 						setColor(6);
 						std::cout << "震颤引爆！\n";
 						setColor(8);
-						Data->attacker->selecting.total_damage += target->handleTremor();
+						auto vec = Effect::burst::tremor(target->tremor, target->confusion);
+						if (vec.has_value()) {
+							target->addHealth(-vec.value().x);
+							Data->attacker->selecting.total_damage += vec.value().x;
+							target->moveFrontConfusion(vec.value().y);
+							setColor(6);
+							std::cout << "[震颤] " << Data->target->Owner->Data->name << " 血量 -" << vec.value().x << " 混乱阈值 -" << vec.value().y  << "\n";
+							setColor(8);
+						}
 					}
+					// 烧伤爆发
 					if (ptr.type == "burn-explode")
 					{
 						std::cout << "[效果] ";
 						setColor(12);
-						std::cout << "烧伤引爆！\n";
+						std::cout << "烧伤爆发！\n";
 						setColor(8);
-						Data->attacker->selecting.total_damage += target->burnExplode();
+						auto vec = Effect::burst::dot(target->burn);
+						if (vec.has_value()) {
+							target->addHealth(-vec.value());
+							Data->attacker->selecting.total_damage += vec.value();
+							setColor(12);
+							std::cout << "[烧伤] " << Data->target->Owner->Data->name << " 血量 -" << vec.value() << "\n";
+							setColor(8);
+						}
 					}
+					// 沉沦泛滥
 					if (ptr.type == "sink-explode")
 					{
 						std::cout << "[效果] ";
 						setColor(1);
 						std::cout << "沉沦泛滥！\n";
 						setColor(8);
-						Data->attacker->selecting.total_damage += target->sinkExplode();
+						auto vec = Effect::burst::sink(target->sink, target->sanity, target->Data->sanity);
+						if (vec.has_value()) {
+							target->addHealth(-vec.value().x);
+							Data->attacker->selecting.total_damage += vec.value().x;
+							target->addSanity(-vec.value().y);
+							setColor(1);
+							std::cout << "[沉沦] " << Data->target->Owner->Data->name << " 血量 -" << vec.value().x << " 理智 -" << vec.value().y << "\n";
+							setColor(8);
+						}
 					}
 				}
 				setColor(8);
@@ -99,7 +150,14 @@ public:
 
 		EventBus::get().subscribe(BattleEvent::RollCoin, [this](void* data) {
 			CombatEventData* Data = static_cast<CombatEventData*>(data);
-			Data->a->handleBleed();
+			// 处理流血
+			auto dmg = Effect::active::tick(Data->a->bleed);
+			if (dmg.has_value()) {
+				Data->a->addHealth(-dmg.value());
+				setColor(4);
+				std::cout << "[流血] " << Data->a->Data->name << " 血量 -" << dmg.value() << "\n";
+				setColor(8);
+			}
 			});
 
 		EventBus::get().subscribe(BattleEvent::Critical, [this](void* data) {
@@ -112,42 +170,42 @@ public:
 	void handleEffect(const CoinEffect& ptr, CharacterInstance* target) {
 		if (ptr.type == "burn")
 		{
-			target->addBurn(ptr.value);
+			Effect::add(target->burn, ptr.value);
 			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(12);
 			std::cout << "烧伤[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "bleed")
 		{
-			target->addBleed(ptr.value);
+			Effect::add(target->bleed, ptr.value);
 			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(4);
 			std::cout << "流血[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "rupture")
 		{
-			target->addRupture(ptr.value);
+			Effect::add(target->rupture, ptr.value);
 			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(10);
 			std::cout << "破裂[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "sink")
 		{
-			target->addSink(ptr.value);
+			Effect::add(target->sink, ptr.value);
 			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(1);
 			std::cout << "沉沦[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "tremor")
 		{
-			target->addTremor(ptr.value);
+			Effect::add(target->tremor, ptr.value);
 			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(6);
 			std::cout << "震颤[" << ptr.value.x << "][" << ptr.value.y << "]\n";
 		}
 		if (ptr.type == "breath")
 		{
-			target->addBreath(ptr.value);
+			Effect::add(target->breath, ptr.value);
 			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
 			setColor(15);
 			std::cout << "呼吸法[" << ptr.value.x << "][" << ptr.value.y << "]\n";

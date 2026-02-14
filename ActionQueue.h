@@ -206,63 +206,68 @@ public:
 		// 拼点直到 a与b的点数不同 && 有一方硬币全部被摧毁
 		do
 		{
-			// 投掷a与b所有硬币
-			rollEachCoin(a);
-			rollEachCoin(b);
-			// 广播 投掷硬币
-			EventBus::get().dispatch(BattleEvent::RollCoin, &data);
-			// 计算 a 点数
-			a.selecting.total_point = a.selecting.base;
-			// 等压
-			if (isLevelDiff(a.selecting, b.selecting)) { a.selecting.total_point += static_cast<int>((a.selecting.attack_level - b.selecting.attack_level) / 3); }
-			// 根据硬币正面次数增加点数
-			for (auto& ptr : a.selecting.coin_list)
+			do
 			{
-				if (!ptr.is_Broke && ptr.current_Face)
+				// 投掷a与b所有硬币
+				rollEachCoin(a);
+				rollEachCoin(b);
+				// 广播 投掷硬币
+				EventBus::get().dispatch(BattleEvent::RollCoin, &data);
+				// 计算 a 点数
+				a.selecting.total_point = a.selecting.base;
+				// 等压
+				if (isLevelDiff(a.selecting, b.selecting)) { a.selecting.total_point += static_cast<int>((a.selecting.attack_level - b.selecting.attack_level) / 3); }
+				// 根据硬币正面次数增加点数
+				for (auto& ptr : a.selecting.coin_list)
 				{
-					a.selecting.total_point += a.selecting.change;
+					if (!ptr.is_Broke && ptr.current_Face)
+					{
+						a.selecting.total_point += a.selecting.change;
+					}
 				}
-			}
-			// 计算 b 点数
-			b.selecting.total_point = b.selecting.base;
-			// 等压
-			if (isLevelDiff(b.selecting, a.selecting)) { b.selecting.total_point += static_cast<int>((b.selecting.attack_level - a.selecting.attack_level) / 3); }
-			// 根据硬币正面次数增加点数
-			for (auto& ptr : b.selecting.coin_list)
-			{
-				if (!ptr.is_Broke && ptr.current_Face)
+				// 计算 b 点数
+				b.selecting.total_point = b.selecting.base;
+				// 等压
+				if (isLevelDiff(b.selecting, a.selecting)) { b.selecting.total_point += static_cast<int>((b.selecting.attack_level - a.selecting.attack_level) / 3); }
+				// 根据硬币正面次数增加点数
+				for (auto& ptr : b.selecting.coin_list)
 				{
-					b.selecting.total_point += b.selecting.change;
+					if (!ptr.is_Broke && ptr.current_Face)
+					{
+						b.selecting.total_point += b.selecting.change;
+					}
 				}
-			}
+
+				// 打印a的技能硬币
+				setSinColor(a.selecting.sin_type);
+				std::cout << "「" << a.selecting.name << "」";
+				printEachCoin(a);
+				std::cout << " " << a.selecting.total_point << " ";
+				// 打印b的技能硬币
+				setSinColor(b.selecting.sin_type);
+				std::cout << "「" << b.selecting.name << "」";
+				printEachCoin(b);
+				std::cout << " " << b.selecting.total_point << "\n";
+
+				Sleep(100);
+			} while (a.selecting.total_point == b.selecting.total_point);
 
 			// 若a点数大于b, 摧毁b最前的硬币；若b点数大于a，摧毁a最前的硬币
 			if (a.selecting.total_point > b.selecting.total_point) { b.selecting.destoryFrontCoin(); }
 			else if (b.selecting.total_point > a.selecting.total_point) { a.selecting.destoryFrontCoin(); }
 
-			// 打印a的技能硬币
-			setSinColor(a.selecting.sin_type);
-			std::cout << "「" << a.selecting.name << "」";
-			printEachCoin(a);
-			std::cout << " " << a.selecting.total_point << " ";
-			// 打印b的技能硬币
-			setSinColor(b.selecting.sin_type);
-			std::cout << "「" << b.selecting.name << "」";
-			printEachCoin(b);
-			std::cout << " " << b.selecting.total_point << "\n";
-
-			Sleep(100);
-		} while ((a.selecting.total_point == b.selecting.total_point) || (!a.selecting.isAllCoinBroke() && !b.selecting.isAllCoinBroke()));
+		} while (!a.selecting.isAllCoinBroke() && !b.selecting.isAllCoinBroke());
 
 		// 若所有硬币破碎，变动值固定为1
-		if (a.selecting.isAllCoinBroke()) { a.selecting.change = 1; }
-		if (b.selecting.isAllCoinBroke()) { b.selecting.change = 1; }
+		if (a.selecting.isAllCoinBroke()) { a.selecting.change = 0; }
+		if (b.selecting.isAllCoinBroke()) { b.selecting.change = 0; }
 
 		std::cout << "\n";
 	}
 
 	void makeDamage(ActionSlot& attacker, ActionSlot& target) {
 		initNum(attacker);
+		initNum(target);
 		
 		setColor(15);
 		std::cout << "[日志] " << attacker.Owner->Data->name << " 对 " << target.Owner->Data->name << " 使用了 ";
@@ -285,11 +290,14 @@ public:
 		data.mul_2 = &mul_2;
 		data.add_1 = &add_1;
 		data.add_2 = &add_2;
+		Coin* current = nullptr;
+		// 设初始点数为基础值
+		attacker.selecting.total_point = attacker.selecting.base;
 		// 遍历每个硬币
 		for (size_t i = 0; i < attacker.selecting.coin_list.size(); i++)
 		{
 			data.coin = &attacker.selecting.coin_list[i];
-			Coin* current = &attacker.selecting.coin_list[i];
+			current = &attacker.selecting.coin_list[i];
 			// 重置增伤数值
 			mul_1 = 1;
 			mul_2 = 1;
@@ -327,7 +335,8 @@ public:
 				// 攻防差值
 				mul_1 += diff / (abs(diff) + 25);
 				// 暴击率
-				if (attacker.Owner->handleBreath()) { mul_1 += 0.2; EventBus::get().dispatch(BattleEvent::Critical, &data); }
+				auto critical = Effect::active::breath(attacker.Owner->breath);
+				if (critical.has_value()) { if (critical.value()) { mul_1 += 0.2; EventBus::get().dispatch(BattleEvent::Critical, &data); } }
 				// 抗性
 				mul_1 += resist;
 				std::cout << "[日志] 抗性：";
