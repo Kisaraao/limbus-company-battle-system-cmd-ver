@@ -61,8 +61,9 @@ public:
 		switch (action.action_type)
 		{
 		case ActionType::Combat:
+
 			// 广播 拼点前
-			EventBus::get().dispatch(BattleEvent::BeforeCombat, nullptr);
+			EventBus::get().dispatch(BattleEvent::BeforeCombat, &action);
 
 			// 拼点
 			makeCombat(*action.a, *action.b);

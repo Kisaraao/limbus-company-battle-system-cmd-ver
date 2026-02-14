@@ -127,4 +127,9 @@ public:
 	Vector2 sink = { 0, 0 };
 	Vector2 tremor = { 0, 0 };
 	Vector2 breath = { 0,0 };
+	// ״̬
+	Vector2 attack_level_up = { 0,0 };
+	Vector2 attack_level_down = { 0,0 };
+	Vector2 strong = { 0,0 };
+	Vector2 weak = { 0,0 };
 };

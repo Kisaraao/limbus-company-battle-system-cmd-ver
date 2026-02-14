@@ -93,6 +93,21 @@ public:
 					if (ptr.target == "enemy") { target = Data->target->Owner; }
 					else if (ptr.target == "self") { target = Data->attacker->Owner; }
 					handleEffect(ptr, target);
+
+					// 重投
+					if (ptr.type == "reroll")
+					{
+						if (Data->coin->reroll_time < ptr.value.y)
+						{
+							++Data->coin->reroll_time;
+							Data->attacker->selecting.coin_list.push_back(*Data->coin);
+							std::cout << "[效果] ";
+							setColor(15);
+							std::cout << "触发重投！\n";
+							setColor(8);
+						}
+					}
+
 					// 震颤引爆
 					if (ptr.type == "tremor-explode")
 					{
@@ -166,8 +181,99 @@ public:
 			std::cout << "暴击！\n";
 			setColor(8);
 			});
+
+		EventBus::get().subscribe(BattleEvent::BeforeCombat, [this](void* data) {
+			Action* Data = static_cast<Action*>(data);
+			ActionSlot* slots[] = { Data->a, Data->b };
+			for (auto* slot : slots) {
+				if (slot) {
+					// 攻击等级提升
+					if (slot->Owner->attack_level_up != Vector2(0, 0))
+					{
+						auto dmg = Effect::active::tick(slot->Owner->attack_level_up);
+						if (dmg.has_value()) {
+							slot->selecting.attack_level += dmg.value();
+							setColor(4);
+							std::cout << "[攻击等级提升] 触发 " << slot->Owner->Data->name << " 本技能攻击等级 +" << dmg.value() << "\n";
+							std::cout << "[DEBUG]该技能现攻击等级：" << slot->selecting.attack_level << "\n";
+							setColor(8);
+						}
+					}
+					// 攻击等级降低
+					if (slot->Owner->attack_level_down != Vector2(0, 0))
+					{
+						auto dmg = Effect::active::tick(slot->Owner->attack_level_down);
+						if (dmg.has_value()) {
+							slot->selecting.attack_level -= dmg.value();
+							setColor(9);
+							std::cout << "[攻击等级降低] 触发 " << slot->Owner->Data->name << " 本技能攻击等级 -" << dmg.value() << "\n";
+							if (slot->selecting.attack_level < 1) { slot->selecting.attack_level = 1; }
+							std::cout << "[DEBUG]该技能现攻击等级：" << slot->selecting.attack_level << "\n";
+							setColor(8);
+						}
+					}
+					// 强壮
+					if (slot->Owner->strong != Vector2(0, 0))
+					{
+						auto dmg = Effect::active::tick(slot->Owner->strong);
+						if (dmg.has_value()) {
+							slot->selecting.base += dmg.value();
+							setColor(4);
+							std::cout << "[强壮] 触发 " << slot->Owner->Data->name << " 本技能基础值 +" << dmg.value() << "\n";
+							std::cout << "[DEBUG]该技能现基础值：" << slot->selecting.base << "\n";
+							setColor(8);
+						}
+					}
+					// 虚弱
+					if (slot->Owner->weak != Vector2(0, 0))
+					{
+						auto dmg = Effect::active::tick(slot->Owner->weak);
+						if (dmg.has_value()) {
+							slot->selecting.base -= dmg.value();
+							setColor(4);
+							std::cout << "[虚弱] 触发 " << slot->Owner->Data->name << " 本技能基础值 -" << dmg.value() << "\n";
+							if (slot->selecting.base < 0) { slot->selecting.base = 0; }
+							std::cout << "[DEBUG]该技能现基础值：" << slot->selecting.base << "\n";
+							setColor(8);
+						}
+					}
+				}
+			}
+			});
 	}
 	void handleEffect(const CoinEffect& ptr, CharacterInstance* target) {
+		// 强壮
+		if (ptr.type == "strong")
+		{
+			Effect::add(target->strong, ptr.value);
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
+			setColor(4);
+			std::cout << "强壮[" << ptr.value.x << "]\n";
+		}
+		// 虚弱
+		if (ptr.type == "weak")
+		{
+			Effect::add(target->weak, ptr.value);
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
+			setColor(9);
+			std::cout << "虚弱[" << ptr.value.x << "]\n";
+		}
+		// 攻击等级提升
+		if (ptr.type == "attack_level_up")
+		{
+			Effect::add(target->attack_level_up, ptr.value);
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
+			setColor(4);
+			std::cout << "攻击等级提升[" << ptr.value.x << "]\n";
+		}
+		// 攻击等级降低
+		if (ptr.type == "attack_level_down")
+		{
+			Effect::add(target->attack_level_down, ptr.value);
+			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
+			setColor(9);
+			std::cout << "攻击等级降低[" << ptr.value.x << "]\n";
+		}
 		if (ptr.type == "burn")
 		{
 			Effect::add(target->burn, ptr.value);
@@ -439,35 +545,56 @@ public:
 	}
 
 	void showEffectStatus(CharacterInstance& ch) {
-		if (ch.breath.x != 0 && ch.breath.y != 0)
+		if (ch.breath != Vector2(0, 0))
 		{
 			setColor(15);
 			std::cout << "呼吸法[" << ch.breath.x << "][" << ch.breath.y << "] ";
 		}
-		if (ch.burn.x != 0 && ch.burn.y != 0)
+		if (ch.burn != Vector2(0, 0))
 		{
 			setColor(12);
 			std::cout << "烧伤[" << ch.burn.x << "][" << ch.burn.y << "] ";
 		}
-		if (ch.bleed.x != 0 && ch.bleed.y != 0)
+		if (ch.bleed != Vector2(0, 0))
 		{
 			setColor(4);
 			std::cout << "流血[" << ch.bleed.x << "][" << ch.bleed.y << "] ";
 		}
-		if (ch.rupture.x != 0 && ch.rupture.y != 0)
+		if (ch.rupture != Vector2(0, 0))
 		{
 			setColor(10);
 			std::cout << "破裂[" << ch.rupture.x << "][" << ch.rupture.y << "] ";
 		}
-		if (ch.sink.x != 0 && ch.sink.y != 0)
+		if (ch.sink != Vector2(0, 0))
 		{
 			setColor(1);
 			std::cout << "沉沦[" << ch.sink.x << "][" << ch.sink.y << "] ";
 		}
-		if (ch.tremor.x != 0 && ch.tremor.y != 0)
+		if (ch.tremor != Vector2(0, 0))
 		{
 			setColor(14);
 			std::cout << "震颤[" << ch.tremor.x << "][" << ch.tremor.y << "]";
+		}
+		// 状态
+		if (ch.attack_level_up != Vector2(0, 0))
+		{
+			setColor(4);
+			std::cout << "攻击等级提升[" << ch.attack_level_up.x << "] ";
+		}
+		if (ch.attack_level_down != Vector2(0, 0))
+		{
+			setColor(9);
+			std::cout << "攻击等级降低[" << ch.attack_level_down.x << "] ";
+		}
+		if (ch.strong != Vector2(0, 0))
+		{
+			setColor(4);
+			std::cout << "强壮[" << ch.strong.x << "] ";
+		}
+		if (ch.weak != Vector2(0, 0))
+		{
+			setColor(9);
+			std::cout << "虚弱[" << ch.weak.x << "] ";
 		}
 		std::cout << "\n\n";
 		setColor(8);

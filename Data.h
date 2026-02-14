@@ -39,6 +39,8 @@ public:
 	// 特色文本
 	std::string before;
 	std::string after;
+	// 重投次数
+	int reroll_time = 0;
 public:
 	bool roll(int sanity) {
 		current_Face = RandomManager::get().probability(0.5 + sanity * 0.01);
