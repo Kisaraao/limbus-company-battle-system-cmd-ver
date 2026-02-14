@@ -316,6 +316,7 @@ public:
 		Coin* current = nullptr;
 		// 设初始点数为基础值
 		attacker.selecting.total_point = attacker.selecting.base;
+
 		// 遍历每个硬币
 		for (size_t i = 0; i < attacker.selecting.coin_list.size(); i++)
 		{
@@ -334,6 +335,10 @@ public:
 				// 抗性
 				float resist = target.Owner->Data->resist.at(attacker.selecting.attack_type);
 				if (target.Owner->isConfused()) { resist = 2.0f; }
+				if (resist < 1.0f)
+				{
+					resist = -resist;
+				}
 
 				// 广播事件 伤害前
 				EventBus::get().dispatch(BattleEvent::BeforeDamage, &data);
@@ -354,7 +359,7 @@ public:
 				current->damage = attacker.selecting.total_point;
 
 				// 当前硬币造成的伤害=当前硬币数值×第一类乘算增伤×第二类乘算增伤+第一类加算增伤+第二类加算增伤
-
+				// 乘以第一类乘算增伤
 				// 攻防差值
 				mul_1 += diff / (abs(diff) + 25);
 				// 暴击率
@@ -368,15 +373,39 @@ public:
 				else { setColor(7); std::cout << "一般"; }
 				std::cout << " x" << resist << "\n";
 				setColor(8);
-
-				// 乘以第一类乘算增伤
 				std::cout << "[日志] 第一类乘算增伤：";
 				setColor(15);
 				std::cout << "x" << (int)(mul_1 * 100) << "%\n";
 				setColor(8);
 				current->damage *= mul_1;
+
 				// 乘以第二类乘算增伤
+				
+				// 伤害强化
+				if (attacker.Owner->damage_enhance.x > 0.0f)
+				{
+					float damage_enhance = min(attacker.Owner->damage_enhance.x / 10.0f, 1.0f);
+					mul_2 += damage_enhance;
+				}
+				// 伤害弱化
+				if (attacker.Owner->damage_weak.x > 0.0f)
+				{
+					float damage_weak = min(attacker.Owner->damage_weak.x / 10.0f, 1.0f);
+					mul_2 -= damage_weak;
+				}
+				// 守护
+				if (target.Owner->protect.x > 0.0f)
+				{
+					float protect = min(target.Owner->protect.x / 10.0f, 1.0f);
+					mul_2 -= protect;
+				}
+
+				std::cout << "[日志] 第二类乘算增伤：";
+				setColor(15);
+				std::cout << "x" << (int)(mul_2 * 100) << "%\n";
+				setColor(8);
 				current->damage *= mul_2;
+
 				// 加以第一类加算增伤
 				current->damage += add_1;
 				// 加以第二类加算增伤

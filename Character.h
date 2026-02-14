@@ -132,4 +132,46 @@ public:
 	Vector2 attack_level_down = { 0,0 };
 	Vector2 strong = { 0,0 };
 	Vector2 weak = { 0,0 };
+
+	Vector2 damage_enhance = { 0,0 };
+	int rounder_enhance = 0;
+	Vector2 damage_weak = { 0,0 };
+	int rounder_weak = 0;
+	void clearDamageEnhance() {
+		if (rounder_enhance == 1)
+		{
+			// 清空伤害强化
+			if (damage_enhance.x > 0.0f) { damage_enhance = { 0,0 }; }
+			rounder_enhance = 0;
+		}
+		else
+		{
+			++rounder_enhance;
+		}
+		if (rounder_weak == 1)
+		{
+			// 清空伤害弱化
+			if (damage_weak.x > 0.0f) { damage_weak = { 0,0 }; }
+			rounder_weak = 0;
+		}
+		else
+		{
+			++rounder_weak;
+		}
+	}
+
+	Vector2 protect = { 0,0 };
+	int rounder_protect = 0;
+	void clearProtect() {
+		if (rounder_protect == 1)
+		{
+			// 清空伤害强化
+			if (protect.x > 0.0f) { protect = { 0,0 }; }
+			rounder_protect = 0;
+		}
+		else
+		{
+			++rounder_protect;
+		}
+	}
 };

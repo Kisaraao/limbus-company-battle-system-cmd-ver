@@ -39,6 +39,12 @@ PS：速度目前只能看看，没实质用处。
 > 强壮：strong
 > 
 > 虚弱：weak
+> 
+> 伤害强化：damage_enhance
+> 
+> 伤害弱化：damage_weak
+> 
+> 守护：protect
 
 > #### 私货
 > 

@@ -28,23 +28,23 @@
         <Change val="20"/>
         <Type attack="斩击" sin="暴怒"/>
         <Using>
-            <Effect target="enemy" type="breath" mode="add" x="5"/>
+            <Effect target="self" type="protect" x="5"/>
         </Using>
         <Combat>
             <Win>
-                <Effect target="enemy" type="breath" mode="add" x="5"/>
+                <Effect target="enemy" type="breath" x="5"/>
             </Win>
             <Lose>
-                <Effect target="enemy" type="breath" mode="add" x="-5"/>
+                <Effect target="enemy" type="breath" x="-5"/>
             </Lose>
         </Combat>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="breath" mode="add" x="25" y="25"/>
-            <Effect target="enemy" type="burn" mode="add" x="5" y="5"/>
-            <Effect target="enemy" type="bleed" mode="add" x="5" y="5"/>
-            <Effect target="enemy" type="rupture" mode="add" x="5" y="5"/>
-            <Effect target="enemy" type="sink" mode="add" x="5" y="5"/>
-            <Effect target="enemy" type="tremor" mode="add" x="5" y="5"/>
+            <Effect target="enemy" type="breath" x="25" y="25"/>
+            <Effect target="enemy" type="burn" x="5" y="5"/>
+            <Effect target="enemy" type="bleed" x="5" y="5"/>
+            <Effect target="enemy" type="rupture" x="5" y="5"/>
+            <Effect target="enemy" type="sink" x="5" y="5"/>
+            <Effect target="enemy" type="tremor" x="5" y="5"/>
             <Effect target="enemy" type="tremor-explode"/>
             <Effect target="enemy" type="burn-explode"/>
             <Effect target="enemy" type="sink-explode"/>
@@ -53,6 +53,8 @@
             <Effect target="self" type="strong" x="1"/>
             <Effect target="enemy" type="weak" x="1"/>
             <Effect target="self" type="reroll" y="1"/>
+            <Effect target="self" type="damage_enhance" x="1"/>
+            <Effect target="enemy" type="damage_weak" x="1"/>
         </Coin>
     </Skill>
 

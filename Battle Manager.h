@@ -16,6 +16,9 @@
 extern bool Running;
 
 void addEffect(CoinEffect& ptr, CharacterInstance& target) {
+	if (ptr.type == "protect") { EffectManager::Get().addEffect(target.protect, ptr, target, "守护", 9); target.rounder_protect = 0; }
+	if (ptr.type == "damage_enhance") { EffectManager::Get().addEffect(target.damage_enhance, ptr, target, "伤害强化", 4); target.rounder_enhance = 0; }
+	if (ptr.type == "damage_weak") { EffectManager::Get().addEffect(target.damage_weak, ptr, target, "伤害弱化", 9); target.rounder_weak = 0; }
 	if (ptr.type == "strong") { EffectManager::Get().addEffect(target.strong, ptr, target, "强壮", 4); }
 	if (ptr.type == "weak") { EffectManager::Get().addEffect(target.weak, ptr, target, "虚弱", 9); }
 	if (ptr.type == "attack_level_up") { EffectManager::Get().addEffect(target.attack_level_up, ptr, target, "攻击等级提升", 4); }
@@ -73,6 +76,12 @@ public:
 			});
 
 		EventBus::get().subscribe(BattleEvent::TurnEnd, [this](void* data) {
+			Player.clearDamageEnhance();
+			Enemy.clearDamageEnhance();
+
+			Player.clearProtect();
+			Enemy.clearProtect();
+
 			auto dmg = Effect::active::tick(Player.burn);
 			if (dmg.has_value()) {
 				Player.addHealth(-dmg.value()); 
@@ -501,6 +510,21 @@ public:
 		{
 			setColor(9);
 			std::cout << "虚弱[" << ch.weak.x << "] ";
+		}
+		if (ch.damage_enhance != Vector2(0, 0))
+		{
+			setColor(4);
+			std::cout << "伤害强化[" << ch.damage_enhance.x << "] ";
+		}
+		if (ch.damage_weak != Vector2(0, 0))
+		{
+			setColor(9);
+			std::cout << "伤害弱化[" << ch.damage_weak.x << "] ";
+		}
+		if (ch.protect != Vector2(0, 0))
+		{
+			setColor(9);
+			std::cout << "守护[" << ch.protect.x << "] ";
 		}
 		std::cout << "\n\n";
 		setColor(8);
