@@ -33,12 +33,12 @@
         <Base val="3"/>
         <Change val="4"/>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
-            <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
+            <Effect target="enemy" type="burn" x="2" y="2"/>
+            <Effect target="enemy" type="tremor" x="2" y="2"/>
         </Coin>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="2"/>
-            <Effect target="enemy" type="tremor" mode="add" x="2"/>
+            <Effect target="enemy" type="burn" x="2"/>
+            <Effect target="enemy" type="tremor" x="2"/>
         </Coin>
     </Skill>
 
@@ -50,12 +50,12 @@
         <Base val="4"/>
         <Change val="3"/>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
-            <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
+            <Effect target="enemy" type="burn" x="2" y="2"/>
+            <Effect target="enemy" type="tremor" x="2" y="2"/>
         </Coin>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
-            <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
+            <Effect target="enemy" type="burn" x="2" y="2"/>
+            <Effect target="enemy" type="tremor" x="2" y="2"/>
         </Coin>
     </Skill>
 
@@ -67,8 +67,8 @@
         <Base val="5"/>
         <Change val="3"/>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="3" y="3"/>
-            <Effect target="enemy" type="tremor" mode="add" x="3" y="3"/>
+            <Effect target="enemy" type="burn" x="3" y="3"/>
+            <Effect target="enemy" type="tremor" x="3" y="3"/>
         </Coin>
         <Coin>
             <Effect target="enemy" type="tremor-explode"/>
@@ -84,11 +84,11 @@
         <Change val="4"/>
         <Coin>
             <Before content="能接得住的话，就试试看吧。"/>
-            <Effect target="enemy" type="burn" mode="add" x="3"/>
-            <Effect target="enemy" type="tremor" mode="add" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="tremor" x="3"/>
         </Coin>
         <Coin>
-            <Effect target="enemy" type="tremor" mode="add" x="3" y="3"/>
+            <Effect target="enemy" type="tremor" x="3" y="3"/>
         </Coin>
         <Coin>
             <Effect target="enemy" type="tremor-explode"/>
@@ -105,12 +105,12 @@
         <Base val="5"/>
         <Change val="3"/>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
-            <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
+            <Effect target="enemy" type="burn" x="2" y="2"/>
+            <Effect target="enemy" type="tremor" x="2" y="2"/>
         </Coin>
         <Coin>
-            <Effect target="enemy" type="burn" mode="add" x="2" y="2"/>
-            <Effect target="enemy" type="tremor" mode="add" x="2" y="2"/>
+            <Effect target="enemy" type="burn" x="2" y="2"/>
+            <Effect target="enemy" type="tremor" x="2" y="2"/>
         </Coin>
         <Coin>
             <Before content="还敢东张西望，滚去死吧！"/>
@@ -126,12 +126,12 @@
         <Base val="5"/>
         <Change val="3"/>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="burn" mode="add" x="4"/>
-            <Effect target="enemy" type="tremor" mode="add" x="4"/>
+            <Effect target="enemy" type="burn" x="4"/>
+            <Effect target="enemy" type="tremor" x="4"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="burn" mode="add" y="4"/>
-            <Effect target="enemy" type="tremor" mode="add" y="4"/>
+            <Effect target="enemy" type="burn" y="4"/>
+            <Effect target="enemy" type="tremor" y="4"/>
             <After content="狩猎结束！"/>
         </Coin>
         <Coin type="Unbreakable"></Coin>
@@ -147,20 +147,28 @@
         <Name val="处置"/>
         <Type attack="斩击" sin="暴怒"/>
         <Attack_Level val="3"/>
-        <Base val="6"/>
-        <Change val="4"/>
+        <Base val="3"/>
+        <Change val="2"/>
+        <Using>
+            <Effect target="self" type="breath" y="3"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="breath" x="5"/>
+            </Win>
+        </Combat>
         <Coin type="Unbreakable">
             <Before content="烦死了，烦死了啊！你们和券券，全都烦死了！！！"/>
-            <Effect target="enemy" type="burn" mode="add" x="3"/>
-            <Effect target="enemy" type="tremor" mode="add" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="tremor" x="3"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="burn" mode="add" x="3"/>
-            <Effect target="enemy" type="tremor" mode="add" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="tremor" x="3"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="burn" mode="add" y="6"/>
-            <Effect target="enemy" type="tremor" mode="add" y="6"/>
+            <Effect target="enemy" type="burn" y="6"/>
+            <Effect target="enemy" type="tremor" y="6"/>
         </Coin>
         <Coin type="Unbreakable"></Coin>
         <Coin type="Unbreakable">

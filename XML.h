@@ -79,6 +79,50 @@ public:
 				}
 				skill.coin_list.push_back(coin);
 			}
+			// 使用时
+			if (!skl.child("Using").empty())
+			{
+				for (auto& ptr : skl.child("Using").children("Effect"))
+				{
+					CoinEffect effect;
+					effect.target = ptr.attribute("target").as_string();
+					effect.type = ptr.attribute("type").as_string();
+					effect.mode = ptr.attribute("mode").as_string();
+					effect.value.x = ptr.attribute("x").as_float(0.0f);
+					effect.value.y = ptr.attribute("y").as_float(0.0f);
+					skill.using_list.push_back(effect);
+				}
+			}
+			// 拼点前后
+			if (!skl.child("Combat").empty())
+			{
+				if (!skl.child("Combat").child("Win").empty())
+				{
+					for (auto& ptr : skl.child("Combat").child("Win").children("Effect"))
+					{
+						CoinEffect effect;
+						effect.target = ptr.attribute("target").as_string();
+						effect.type = ptr.attribute("type").as_string();
+						effect.mode = ptr.attribute("mode").as_string();
+						effect.value.x = ptr.attribute("x").as_float(0.0f);
+						effect.value.y = ptr.attribute("y").as_float(0.0f);
+						skill.combat_win.push_back(effect);
+					}
+				}
+				if (!skl.child("Combat").child("Lose").empty())
+				{
+					for (auto& ptr : skl.child("Combat").child("Lose").children("Effect"))
+					{
+						CoinEffect effect;
+						effect.target = ptr.attribute("target").as_string();
+						effect.type = ptr.attribute("type").as_string();
+						effect.mode = ptr.attribute("mode").as_string();
+						effect.value.x = ptr.attribute("x").as_float(0.0f);
+						effect.value.y = ptr.attribute("y").as_float(0.0f);
+						skill.combat_win.push_back(effect);
+					}
+				}
+			}
 			ch->skill_list.push_back(skill);
 		}
 	}

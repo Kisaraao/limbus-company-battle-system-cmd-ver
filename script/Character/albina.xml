@@ -30,7 +30,7 @@
         <Base val="4"/>
         <Change val="3"/>
         <Coin>
-            <Effect target="enemy" type="bleed" mode="add" x="4"/>
+            <Effect target="enemy" type="bleed" x="4"/>
         </Coin>
         <Coin></Coin>
     </Skill>
@@ -43,10 +43,10 @@
         <Base val="4"/>
         <Change val="4"/>
         <Coin>
-            <Effect target="enemy" type="bleed" mode="add" y="2"/>
+            <Effect target="enemy" type="bleed" y="2"/>
         </Coin>
         <Coin>
-            <Effect target="enemy" type="bleed" mode="add" x="2"/>
+            <Effect target="enemy" type="bleed" x="2"/>
         </Coin>
     </Skill>
 
@@ -58,7 +58,7 @@
         <Base val="4"/>
         <Change val="3"/>
         <Coin>
-            <Effect target="enemy" type="bleed" mode="add" y="2"/>
+            <Effect target="enemy" type="bleed" y="2"/>
         </Coin>
         <Coin></Coin>
     </Skill>
@@ -71,10 +71,10 @@
         <Base val="4"/>
         <Change val="2"/>
         <Coin>
-            <Effect target="enemy" type="bleed" mode="add" x="6"/>
+            <Effect target="enemy" type="bleed" x="6"/>
         </Coin>
         <Coin>
-            <Effect target="enemy" type="bleed" mode="add" y="1"/>
+            <Effect target="enemy" type="bleed" y="1"/>
         </Coin>
         <Coin></Coin>
     </Skill>
@@ -87,15 +87,15 @@
         <Base val="4"/>
         <Change val="4"/>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="bleed" mode="add" x="10"/>
+            <Effect target="enemy" type="bleed" x="10"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="bleed" mode="add" y="2"/>
+            <Effect target="enemy" type="bleed" y="2"/>
             <After content="血管的厚度，还不赖。"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="sanity" mode="add" x="-5"/>
-            <Effect target="self" type="sanity" mode="add" x="5"/>
+            <Effect target="enemy" type="sanity" x="-5"/>
+            <Effect target="self" type="sanity" x="5"/>
         </Coin>
     </Skill>
 
@@ -108,14 +108,14 @@
         <Change val="4"/>
         <Coin type="Unbreakable">
             <Before content="随着灵感的涌现。我会取走你的一切。"/>
-            <Effect target="enemy" type="bleed" mode="add" x="10"/>
+            <Effect target="enemy" type="bleed" x="10"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="bleed" mode="add" y="2"/>
+            <Effect target="enemy" type="bleed" y="2"/>
         </Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="sanity" mode="add" x="-5"/>
-            <Effect target="self" type="sanity" mode="add" x="10"/>
+            <Effect target="enemy" type="sanity" x="-5"/>
+            <Effect target="self" type="sanity" x="10"/>
         </Coin>
     </Skill>
 
@@ -128,8 +128,8 @@
         <Change val="4"/>
         <Coin type="Unbreakable">
             <Before content="以我的骨头为框架，以我的血肉为填充……表观艺术。"/>
-            <Effect target="enemy" type="sanity" mode="add" x="-5"/>
-            <Effect target="self" type="sanity" mode="add" x="5"/>
+            <Effect target="enemy" type="sanity" x="-5"/>
+            <Effect target="self" type="sanity" x="5"/>
         </Coin>
         <Coin type="Unbreakable"></Coin>
         <Coin type="Unbreakable"></Coin>
@@ -145,12 +145,12 @@
         <Change val="4"/>
         <Coin type="Unbreakable">
             <Before content="这次我一定要完成。能被大师认可的杰作……！"/>
-            <Effect target="enemy" type="sanity" mode="add" x="-5"/>
+            <Effect target="enemy" type="sanity" x="-5"/>
         </Coin>
         <Coin type="Unbreakable"></Coin>
         <Coin type="Unbreakable"></Coin>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="bleed" mode="add" y="3"/>
+            <Effect target="enemy" type="bleed" y="3"/>
         </Coin>
     </Skill>
 

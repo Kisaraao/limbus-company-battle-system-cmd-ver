@@ -105,7 +105,7 @@ namespace Effect {
 			if (vec == Vector2(0, 0)) { return std::nullopt; }
 			int damage = vec.x;
 			--vec.y;
-			if (vec.y == 0) { vec = { 0, 0 }; }
+			if (vec.y < 1) { vec = { 0, 0 }; }
 			return damage;
 		}
 
@@ -114,6 +114,7 @@ namespace Effect {
 			if (RandomManager::get().probability(min(vec.x * 0.05, 1)))
 			{
 				--vec.y;
+				if (vec.y < 1) { vec = { 0, 0 }; }
 				return true;
 			}
 			else { return false; }

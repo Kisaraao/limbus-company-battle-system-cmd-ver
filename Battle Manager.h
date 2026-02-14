@@ -9,10 +9,36 @@
 #include "ActionQueue.h"
 #include "EventBus.h"
 #include "ConsoleUtils.h"
+#include "Effect Manager.h"
 
 #pragma execution_character_set("utf-8")
 
 extern bool Running;
+
+void addEffect(CoinEffect& ptr, CharacterInstance& target) {
+	if (ptr.type == "strong") { EffectManager::Get().addEffect(target.strong, ptr, target, "强壮", 4); }
+	if (ptr.type == "weak") { EffectManager::Get().addEffect(target.weak, ptr, target, "虚弱", 9); }
+	if (ptr.type == "attack_level_up") { EffectManager::Get().addEffect(target.attack_level_up, ptr, target, "攻击等级提升", 4); }
+	if (ptr.type == "attack_level_down") { EffectManager::Get().addEffect(target.attack_level_down, ptr, target, "攻击等级降低", 9); }
+
+	if (ptr.type == "burn") { EffectManager::Get().addEffect(target.burn, ptr, target, "烧伤", 12); }
+	if (ptr.type == "bleed") { EffectManager::Get().addEffect(target.bleed, ptr, target, "流血", 4); }
+	if (ptr.type == "rupture") { EffectManager::Get().addEffect(target.rupture, ptr, target, "破裂", 10); }
+	if (ptr.type == "sink") { EffectManager::Get().addEffect(target.sink, ptr, target, "沉沦", 1); }
+	if (ptr.type == "tremor") { EffectManager::Get().addEffect(target.tremor, ptr, target, "震颤", 6); }
+	if (ptr.type == "breath") { EffectManager::Get().addEffect(target.breath, ptr, target, "呼吸法", 15); }
+
+	if (ptr.type == "sanity")
+	{
+		target.addSanity(ptr.value.x);
+		std::cout << "[效果] 理智加值 " << target.Data->name << " <- " << ptr.value.x << "\n";
+	}
+	if (ptr.type == "health")
+	{
+		target.addHealth(ptr.value.x);
+		std::cout << "[效果] 血量加值 " << target.Data->name << " <- " << ptr.value.x << "\n";
+	}
+}
 
 class BattleManager
 {
@@ -92,8 +118,7 @@ public:
 
 					if (ptr.target == "enemy") { target = Data->target->Owner; }
 					else if (ptr.target == "self") { target = Data->attacker->Owner; }
-					handleEffect(ptr, target);
-
+					addEffect(ptr, *target);
 					// 重投
 					if (ptr.type == "reroll")
 					{
@@ -107,7 +132,6 @@ public:
 							setColor(8);
 						}
 					}
-
 					// 震颤引爆
 					if (ptr.type == "tremor-explode")
 					{
@@ -182,152 +206,32 @@ public:
 			setColor(8);
 			});
 
-		EventBus::get().subscribe(BattleEvent::BeforeCombat, [this](void* data) {
-			Action* Data = static_cast<Action*>(data);
-			ActionSlot* slots[] = { Data->a, Data->b };
-			for (auto* slot : slots) {
-				if (slot) {
-					// 攻击等级提升
-					if (slot->Owner->attack_level_up != Vector2(0, 0))
-					{
-						auto dmg = Effect::active::tick(slot->Owner->attack_level_up);
-						if (dmg.has_value()) {
-							slot->selecting.attack_level += dmg.value();
-							setColor(4);
-							std::cout << "[攻击等级提升] 触发 " << slot->Owner->Data->name << " 本技能攻击等级 +" << dmg.value() << "\n";
-							std::cout << "[DEBUG]该技能现攻击等级：" << slot->selecting.attack_level << "\n";
-							setColor(8);
-						}
-					}
-					// 攻击等级降低
-					if (slot->Owner->attack_level_down != Vector2(0, 0))
-					{
-						auto dmg = Effect::active::tick(slot->Owner->attack_level_down);
-						if (dmg.has_value()) {
-							slot->selecting.attack_level -= dmg.value();
-							setColor(9);
-							std::cout << "[攻击等级降低] 触发 " << slot->Owner->Data->name << " 本技能攻击等级 -" << dmg.value() << "\n";
-							if (slot->selecting.attack_level < 1) { slot->selecting.attack_level = 1; }
-							std::cout << "[DEBUG]该技能现攻击等级：" << slot->selecting.attack_level << "\n";
-							setColor(8);
-						}
-					}
-					// 强壮
-					if (slot->Owner->strong != Vector2(0, 0))
-					{
-						auto dmg = Effect::active::tick(slot->Owner->strong);
-						if (dmg.has_value()) {
-							slot->selecting.base += dmg.value();
-							setColor(4);
-							std::cout << "[强壮] 触发 " << slot->Owner->Data->name << " 本技能基础值 +" << dmg.value() << "\n";
-							std::cout << "[DEBUG]该技能现基础值：" << slot->selecting.base << "\n";
-							setColor(8);
-						}
-					}
-					// 虚弱
-					if (slot->Owner->weak != Vector2(0, 0))
-					{
-						auto dmg = Effect::active::tick(slot->Owner->weak);
-						if (dmg.has_value()) {
-							slot->selecting.base -= dmg.value();
-							setColor(4);
-							std::cout << "[虚弱] 触发 " << slot->Owner->Data->name << " 本技能基础值 -" << dmg.value() << "\n";
-							if (slot->selecting.base < 0) { slot->selecting.base = 0; }
-							std::cout << "[DEBUG]该技能现基础值：" << slot->selecting.base << "\n";
-							setColor(8);
-						}
-					}
-				}
+		EventBus::get().subscribe(BattleEvent::UsingSkill, [this](void* data) {
+			UsingSkillEventData* Data = static_cast<UsingSkillEventData*>(data);
+			EffectManager::Get().handleStatus(*Data->self);
+			for (auto& ptr : Data->self->selecting.using_list)
+			{
+				if (ptr.target == "self") { addEffect(ptr, *Data->self->Owner); }
+				else { addEffect(ptr, *Data->target->Owner); }
 			}
 			});
-	}
-	void handleEffect(const CoinEffect& ptr, CharacterInstance* target) {
-		// 强壮
-		if (ptr.type == "strong")
-		{
-			Effect::add(target->strong, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(4);
-			std::cout << "强壮[" << ptr.value.x << "]\n";
-		}
-		// 虚弱
-		if (ptr.type == "weak")
-		{
-			Effect::add(target->weak, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(9);
-			std::cout << "虚弱[" << ptr.value.x << "]\n";
-		}
-		// 攻击等级提升
-		if (ptr.type == "attack_level_up")
-		{
-			Effect::add(target->attack_level_up, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(4);
-			std::cout << "攻击等级提升[" << ptr.value.x << "]\n";
-		}
-		// 攻击等级降低
-		if (ptr.type == "attack_level_down")
-		{
-			Effect::add(target->attack_level_down, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(9);
-			std::cout << "攻击等级降低[" << ptr.value.x << "]\n";
-		}
-		if (ptr.type == "burn")
-		{
-			Effect::add(target->burn, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(12);
-			std::cout << "烧伤[" << ptr.value.x << "][" << ptr.value.y << "]\n";
-		}
-		if (ptr.type == "bleed")
-		{
-			Effect::add(target->bleed, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(4);
-			std::cout << "流血[" << ptr.value.x << "][" << ptr.value.y << "]\n";
-		}
-		if (ptr.type == "rupture")
-		{
-			Effect::add(target->rupture, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(10);
-			std::cout << "破裂[" << ptr.value.x << "][" << ptr.value.y << "]\n";
-		}
-		if (ptr.type == "sink")
-		{
-			Effect::add(target->sink, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(1);
-			std::cout << "沉沦[" << ptr.value.x << "][" << ptr.value.y << "]\n";
-		}
-		if (ptr.type == "tremor")
-		{
-			Effect::add(target->tremor, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(6);
-			std::cout << "震颤[" << ptr.value.x << "][" << ptr.value.y << "]\n";
-		}
-		if (ptr.type == "breath")
-		{
-			Effect::add(target->breath, ptr.value);
-			std::cout << "[效果] " << target->Data->name << " -> " << "施加 ";
-			setColor(15);
-			std::cout << "呼吸法[" << ptr.value.x << "][" << ptr.value.y << "]\n";
-		}
 
-		if (ptr.type == "sanity")
-		{
-			target->addSanity(ptr.value.x);
-			std::cout << "[效果] 理智加值 " << target->Data->name << " -> " << ptr.value.x << "\n";
-		}
-		if (ptr.type == "health")
-		{
-			target->addHealth(ptr.value.x);
-			std::cout << "[效果] 血量加值 " << target->Data->name << " -> " << ptr.value.x << "\n";
-		}
-		setColor(8);
+		EventBus::get().subscribe(BattleEvent::BeforeCombat, [this](void* data) {
+			});
+
+		EventBus::get().subscribe(BattleEvent::AfterCombat, [this](void* data) {
+			AfterCombatEventData* Data = static_cast<AfterCombatEventData*>(data);
+			for (auto& ptr : Data->winner->selecting.combat_win)
+			{
+				if (ptr.target == "self") { addEffect(ptr, *Data->winner->Owner); }
+				else { addEffect(ptr, *Data->loser->Owner); }
+			}
+			for (auto& ptr : Data->loser->selecting.combat_lose)
+			{
+				if (ptr.target == "self") { addEffect(ptr, *Data->loser->Owner); }
+				else { addEffect(ptr, *Data->winner->Owner); }
+			}
+			});
 	}
 
 	enum class State
@@ -573,7 +477,7 @@ public:
 		if (ch.tremor != Vector2(0, 0))
 		{
 			setColor(14);
-			std::cout << "震颤[" << ch.tremor.x << "][" << ch.tremor.y << "]";
+			std::cout << "震颤[" << ch.tremor.x << "][" << ch.tremor.y << "] ";
 		}
 		// 状态
 		if (ch.attack_level_up != Vector2(0, 0))

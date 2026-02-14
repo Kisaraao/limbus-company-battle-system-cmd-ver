@@ -4,7 +4,7 @@
     <!-- 特性关键词 -->
     <Tag val="测试角色"/>
     <!-- 等级 -->
-    <Level val="100"/>
+    <Level val="1"/>
     <!-- 血量上下限与开局血量 -->
     <Health Min="0" Max="10000"></Health>
     <!-- 理智上下限与开局理智 -->
@@ -27,8 +27,19 @@
         <Base val="20"/>
         <Change val="20"/>
         <Type attack="斩击" sin="暴怒"/>
+        <Using>
+            <Effect target="enemy" type="breath" mode="add" x="5"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="enemy" type="breath" mode="add" x="5"/>
+            </Win>
+            <Lose>
+                <Effect target="enemy" type="breath" mode="add" x="-5"/>
+            </Lose>
+        </Combat>
         <Coin type="Unbreakable">
-            <Effect target="self" type="breath" mode="add" x="50" y="50"/>
+            <Effect target="enemy" type="breath" mode="add" x="25" y="25"/>
             <Effect target="enemy" type="burn" mode="add" x="5" y="5"/>
             <Effect target="enemy" type="bleed" mode="add" x="5" y="5"/>
             <Effect target="enemy" type="rupture" mode="add" x="5" y="5"/>
@@ -37,6 +48,11 @@
             <Effect target="enemy" type="tremor-explode"/>
             <Effect target="enemy" type="burn-explode"/>
             <Effect target="enemy" type="sink-explode"/>
+            <Effect target="self" type="attack_level_up" x="10"/>
+            <Effect target="enemy" type="attack_level_down" x="10"/>
+            <Effect target="self" type="strong" x="1"/>
+            <Effect target="enemy" type="weak" x="1"/>
+            <Effect target="self" type="reroll" y="1"/>
         </Coin>
     </Skill>
 

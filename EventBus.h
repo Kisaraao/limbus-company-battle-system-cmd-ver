@@ -6,9 +6,10 @@
 // 1. 定义事件类型（本质就是个标签）
 enum class BattleEvent {
     TurnStart,      // 回合开始
+    UsingSkill,     // 使用时
     BeforeCombat,   // 拼点前
     RollCoin,       // 投掷硬币
-    AfterCombat,   // 拼点后
+    AfterCombat,    // 拼点后
     BeforeDamage,   // 攻击前
     Damage,         // 攻击中
     Critical,       // 暴击

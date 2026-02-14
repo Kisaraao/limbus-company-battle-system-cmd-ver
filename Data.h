@@ -68,7 +68,11 @@ public:
 	// 硬币列表
 	std::vector<Coin> coin_list;
 	// 使用时效果列表
-	std::vector<CoinEffect> whenUsing;
+	std::vector<CoinEffect> using_list;
+	// 拼点胜利效果列表
+	std::vector<CoinEffect> combat_win;
+	// 拼点失败效果列表
+	std::vector<CoinEffect> combat_lose;
 	// 总点数
 	int total_point;
 	// 总伤害

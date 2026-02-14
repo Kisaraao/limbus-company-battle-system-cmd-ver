@@ -25,10 +25,20 @@ struct Action
 	float priority;  // 添加优先级字段
 };
 
+struct UsingSkillEventData {
+	ActionSlot* self;
+	ActionSlot* target;
+};
+
 struct CombatEventData
 {
 	CharacterInstance* a;
 	CharacterInstance* b;
+};
+
+struct AfterCombatEventData {
+	ActionSlot* winner;
+	ActionSlot* loser;
 };
 
 struct DamageEventData {
@@ -58,9 +68,19 @@ public:
 		// 赢者与败者
 		ActionSlot* winner = nullptr;
 		ActionSlot* loser = nullptr;
+
+		UsingSkillEventData data = { action.a, action.b };
+
+		AfterCombatEventData aftercombat;
+
 		switch (action.action_type)
 		{
 		case ActionType::Combat:
+			// 广播 使用时
+			EventBus::get().dispatch(BattleEvent::UsingSkill, &data);
+			// 广播 使用时
+			data = { action.b, action.a };
+			EventBus::get().dispatch(BattleEvent::UsingSkill, &data);
 
 			// 广播 拼点前
 			EventBus::get().dispatch(BattleEvent::BeforeCombat, &action);
@@ -68,13 +88,15 @@ public:
 			// 拼点
 			makeCombat(*action.a, *action.b);
 
-			// 广播 拼点后
-			EventBus::get().dispatch(BattleEvent::AfterCombat, nullptr);
-
 			// 玩家点数大
 			if (action.a->selecting.total_point > action.b->selecting.total_point) { winner = action.a; loser = action.b; }
 			// 敌人点数大
 			else { winner = action.b; loser = action.a; }
+
+			// 广播 拼点后
+			aftercombat.winner = winner;
+			aftercombat.loser = loser;
+			EventBus::get().dispatch(BattleEvent::AfterCombat, &aftercombat);
 
 			// 增减理智
 			winner->Owner->addSanity(static_cast<int>(winner->Owner->Data->sanity.y * 0.2));
