@@ -208,7 +208,6 @@ public:
 
 		EventBus::get().subscribe(BattleEvent::UsingSkill, [this](void* data) {
 			UsingSkillEventData* Data = static_cast<UsingSkillEventData*>(data);
-			EffectManager::Get().handleStatus(*Data->self);
 			for (auto& ptr : Data->self->selecting.using_list)
 			{
 				if (ptr.target == "self") { addEffect(ptr, *Data->self->Owner); }
@@ -217,6 +216,9 @@ public:
 			});
 
 		EventBus::get().subscribe(BattleEvent::BeforeCombat, [this](void* data) {
+			Action* Data = static_cast<Action*>(data);
+			EffectManager::Get().handleStatus(*Data->a);
+			EffectManager::Get().handleStatus(*Data->b);
 			});
 
 		EventBus::get().subscribe(BattleEvent::AfterCombat, [this](void* data) {
