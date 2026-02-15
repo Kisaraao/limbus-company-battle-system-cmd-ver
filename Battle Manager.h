@@ -34,12 +34,12 @@ void addEffect(CoinEffect& ptr,CharacterInstance& target) {
 	if (ptr.type == "sanity")
 	{
 		target.addSanity(ptr.value.x);
-		std::cout << "[效果] 理智加值 " << target.Data->name << " <- " << ptr.value.x << "\n";
+		std::cout << "[效果] 理智加值 " << target.Data->name << " << " << ptr.value.x << "\n";
 	}
 	if (ptr.type == "health")
 	{
 		target.addHealth(ptr.value.x);
-		std::cout << "[效果] 血量加值 " << target.Data->name << " <- " << ptr.value.x << "\n";
+		std::cout << "[效果] 血量加值 " << target.Data->name << " << " << ptr.value.x << "\n";
 	}
 }
 
@@ -146,8 +146,6 @@ public:
 					// 震颤引爆
 					if (ptr.type == "tremor-explode")
 					{
-						std::cout << Data->attacker->Owner->Data->name << "\n";
-						std::cout << Data->target->Owner->Data->name << "\n";
 						std::cout << "[效果] ";
 						setColor(6);
 						std::cout << "震颤引爆！\n";

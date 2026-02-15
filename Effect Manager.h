@@ -16,7 +16,7 @@ public:
 
 	void addEffect(Vector2& vec, CoinEffect& ptr, CharacterInstance& target, const char* name, int color) {
 		Effect::add(vec, ptr.value);
-		std::cout << "[效果] " << target.Data->name << " <- " << "施加 ";
+		std::cout << "[效果] " << target.Data->name << " << " << "施加 ";
 		setColor(color);
 		std::cout << name << "[" << ptr.value.x << "]" << "[" << ptr.value.y << "]\n";
 		setColor(8);
