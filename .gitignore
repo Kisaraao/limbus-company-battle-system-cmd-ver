@@ -1,0 +1,50 @@
+# 只排除Character下的 XML
+/script/Character/*.xml
+
+# 排除 Visual Studio 临时文件
+Debug/
+Release/
+*.user
+*.vs
+*.sln
+*.vcxproj
+*.filters
+
+# 排除 pugiXML 的库文件
+pugiconfig.hpp
+pugixml.cpp
+pugixml.hpp
+
+# 编译输出目录
+build/
+cmake-build-*/
+out/
+
+# IDE 项目文件（如果你用 VS Code 或 CLion）
+.vscode/
+.idea/
+*.user
+*.swp
+*.swo
+
+# 编译中间文件
+*.o
+*.obj
+*.exe
+*.out
+*.app
+
+# 依赖库（如果你在项目内放了第三方库）
+libs/
+third_party/
+
+# 日志和临时文件
+*.log
+*.tmp
+*.cache
+
+# 如果你用 macOS
+.DS_Store
+
+# 如果你用 Windows
+Thumbs.db

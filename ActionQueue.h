@@ -362,16 +362,22 @@ public:
 				auto critical = Effect::active::breath(attacker.Owner->breath);
 				if (critical.has_value()) { if (critical.value()) { mul_1 += 0.2; EventBus::get().dispatch(BattleEvent::Critical, &data); } }
 				// 抗性
-				mul_1 += resist;
+				if (resist > 1)
+				{
+					mul_1 += resist - 1.0f;
+				}
+				else if (resist > 0)
+				{
+					mul_1 += (resist - 1.0f) * 0.5f;
+				}
+				else {
+					mul_1 -= 0.5f;
+				}
 				std::cout << "[日志] 抗性：";
 				if (resist > 1) { setColor(6); std::cout << "脆弱"; }
 				else if (resist < 1) { std::cout << "抵抗"; }
 				else { setColor(7); std::cout << "一般"; }
 				std::cout << " x" << resist << "\n";
-				setColor(8);
-				std::cout << "[日志] 第一类乘算增伤：";
-				setColor(15);
-				std::cout << "x" << (int)(mul_1 * 100) << "%\n";
 				setColor(8);
 				current->damage *= mul_1;
 
@@ -396,16 +402,17 @@ public:
 					mul_2 -= protect;
 				}
 
-				std::cout << "[日志] 第二类乘算增伤：";
-				setColor(15);
-				std::cout << "x" << (int)(mul_2 * 100) << "%\n";
-				setColor(8);
 				current->damage *= mul_2;
 
 				// 加以第一类加算增伤
 				current->damage += add_1;
 				// 加以第二类加算增伤
 				current->damage += add_2;
+
+				std::cout << "[日志] 总增伤：";
+				setColor(15);
+				std::cout << "x" << (int)((mul_1 * mul_2 + add_1 + add_2) * 100) << "%\n";
+				setColor(8);
 
 				// 检查伤害至少为1
 				if (current->damage < 1) { current->damage = 1; }

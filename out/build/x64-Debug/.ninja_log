@@ -1,0 +1,7 @@
+# ninja log v6
+13	551	7930406068348265	CMakeFiles/BattleSystem.dir/pugixml.cpp.obj	48f90d3f1d8f50b6
+6	1131	7930406068288250	CMakeFiles/BattleSystem.dir/main.cpp.obj	e8bdb3c6142f7388
+1150	1472	7930406079718239	BattleSystem.exe	5b766c479f4ac609
+10	549	7930408450424980	CMakeFiles/Result.dir/pugixml.cpp.obj	9840a548bbe75eb0
+2	1120	7930408450344981	CMakeFiles/Result.dir/main.cpp.obj	e2fe5a601b41221d
+1121	1445	7930408461534968	Result.exe	dadb26136fcbf3f7

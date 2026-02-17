@@ -28,7 +28,7 @@
         <Change val="20"/>
         <Type attack="斩击" sin="暴怒"/>
         <Using>
-            <Effect target="self" type="protect" x="5"/>
+            <Effect target="self" type="protect" x="10"/>
         </Using>
         <Combat>
             <Win>
@@ -39,7 +39,7 @@
             </Lose>
         </Combat>
         <Coin type="Unbreakable">
-            <Effect target="enemy" type="breath" x="25" y="25"/>
+            <!-- <Effect target="enemy" type="breath" x="25" y="25"/>
             <Effect target="enemy" type="burn" x="5" y="5"/>
             <Effect target="enemy" type="bleed" x="5" y="5"/>
             <Effect target="enemy" type="rupture" x="5" y="5"/>
@@ -52,7 +52,7 @@
             <Effect target="enemy" type="attack_level_down" x="10"/>
             <Effect target="self" type="strong" x="1"/>
             <Effect target="enemy" type="weak" x="1"/>
-            <Effect target="self" type="reroll" y="1"/>
+            <Effect target="self" type="reroll" y="1"/> -->
             <Effect target="self" type="damage_enhance" x="1"/>
             <Effect target="enemy" type="damage_weak" x="1"/>
         </Coin>

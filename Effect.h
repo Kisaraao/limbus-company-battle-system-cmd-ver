@@ -155,3 +155,19 @@ namespace Effect {
 		}
 	}
 }
+
+class StatusEffect
+{
+public:
+	int limit(int val, int min = 0, int max = 99) {
+		return std::clamp(val, min, max);
+	}
+
+	virtual void active() = 0;
+
+	// 强度上下限
+	int potency_max;
+	int potency_min;
+	// 目前强度数值
+	int potency;
+};

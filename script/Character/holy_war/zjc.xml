@@ -1,0 +1,279 @@
+<Character>
+    <!-- 名称 -->
+    <Name val="宗佳诚"/>
+    <!-- 特性关键词 -->
+    <Tag val="2023年32班"/>
+    <Tag val="前-集训队:移动应用开发"/>
+    <!-- 等级 -->
+    <Level val="59"/>
+    <!-- 血量上下限与开局血量 -->
+    <!-- 血量是因为来的时候硬抗了清一招[空间斩-界] -->
+    <Health Min="0" Max="1829">1644</Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-45" Max="45"></Sanity>
+    <!-- 速度上下限 -->
+    <Speed Min="4" Max="5"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="1.5"/>
+    <Resist name="穿刺" val="1.1"/>
+    <Resist name="打击" val="0.8"/>
+    <!-- 混乱阈值 -->
+    <Confusion val="0.75"/>
+    <Confusion val="0.2"/>
+
+    <!-- 技能 -->
+    <Skill type="attack">
+        <Count val="10"/>
+        <Name val="斩击-哀"/>
+        <Type attack="斩击" sin="暴怒"/>
+        <Attack_Level val="1"/>
+        <Base val="2"/>
+        <Change val="2"/>
+        <Using>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="sanity" x="3"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="3"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="2"/>
+            <Effect target="enemy" type="sink" y="2"/>
+            <Effect type="reroll" y="3"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="9"/>
+        <Name val="集训流快斩"/>
+        <Type attack="斩击" sin="嫉妒"/>
+        <Attack_Level val="1"/>
+        <Base val="5"/>
+        <Change val="2"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="sanity" x="5"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="-3"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Before content="我会向你展示其精华之处。"/>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="2"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" y="2"/>
+            <Effect target="enemy" type="sink" x="2"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="5"/>
+        <Name val="滚开"/>
+        <Type attack="斩击" sin="暴怒"/>
+        <Attack_Level val="2"/>
+        <Base val="4"/>
+        <Change val="4"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="sanity" x="5"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="-3"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Before content="*噪音*"/>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" y="2"/>
+            <Effect target="enemy" type="burn" x="1"/>
+            <After content="滚开！"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="5"/>
+        <Name val="月上碎雪，切割其肉体"/>
+        <Type attack="斩击" sin="嫉妒"/>
+        <Attack_Level val="3"/>
+        <Base val="5"/>
+        <Change val="4"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Coin>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="5"/>
+        <Name val="残响的影响仍旧不可忽视"/>
+        <Type attack="斩击" sin="嫉妒"/>
+        <Attack_Level val="3"/>
+        <Base val="6"/>
+        <Change val="3"/>
+        <Using>
+            <Effect target="self" type="damage_enhance" x="3"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="sanity" x="-5"/>
+                <Effect target="self" type="sink" x="5"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="5"/>
+                <Effect target="self" type="strong" x="3"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Before content="啊——*杂音*"/>
+            <Effect target="self" type="breath" y="3"/>
+            <Effect target="enemy" type="sink" y="3"/>
+            <After content="命运早，早已注定了！"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="2"/>
+            <Effect target="enemy" type="sink" x="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="2"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="2"/>
+            <Effect target="enemy" type="sink" x="2"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="5"/>
+        <Name val="剖开寂静的夜，观察内在"/>
+        <Type attack="斩击" sin="嫉妒"/>
+        <Attack_Level val="3"/>
+        <Base val="4"/>
+        <Change val="5"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="2"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="2"/>
+        <Name val="集训派我流奥义:分歧"/>
+        <Type attack="斩击" sin="暴怒"/>
+        <Attack_Level val="4"/>
+        <Base val="2"/>
+        <Change val="4"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Coin>
+            <Before content="永没有让你适应我的道路，我会逐渐触碰到你。"/>
+            <Effect target="enemy" type="sink" y="5"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="2"/>
+            <Effect target="enemy" type="sink" x="2"/>
+            <Effect type="reroll" y="4"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="1"/>
+        <Name val="自我解构"/>
+        <Type attack="斩击" sin="忧郁"/>
+        <Attack_Level val="5"/>
+        <Base val="3"/>
+        <Change val="4"/>
+        <Using>
+            <Effect target="self" type="breath" x="3"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="damage_enhance" x="4"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="-5"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Before content="我不能离开这里，因为我已经失去了一切。"/>
+            <Effect target="self" type="breath" y="2"/>
+            <Effect target="enemy" type="sink" y="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="2"/>
+            <Effect target="enemy" type="sink" y="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="1"/>
+            <Effect target="enemy" type="sink" y="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="1"/>
+            <Effect target="enemy" type="sink" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="sink-explode"/>
+        </Coin>
+    </Skill>
+
+</Character>

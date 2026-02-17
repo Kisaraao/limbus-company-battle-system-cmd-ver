@@ -3,10 +3,22 @@
     <!-- 原版 -->
     <Character path="albina"/>
     <Character path="valencina"/>
+    <!-- 论外 -->
+    <Character path="tang_yi"/>
+    <Character path="wz"/>
+    <Character path="yty"/>
+    <Character path="yhb"/>
+    <Character path="yzr"/>
+    <Character path="zzy"/>
+    <!-- Holy War -->
+    <Character path="holy_war/mad_yhb"/>
+    <Character path="holy_war/zzy"/>
+    <Character path="holy_war/zjc"/>
+    <Character path="holy_war/qing"/>
     <!-- 测试 -->
     <Character path="test"/>
     <Battle>
-        <Player name="valencina" slots="1"/>
-        <Enemy name="albina" slots="1"/>
+        <Player name="yty" slots="1"/>
+        <Enemy name="holy_war/zjc" slots="1"/>
     </Battle>
 </Leader>

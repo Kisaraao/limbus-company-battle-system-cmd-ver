@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <memory>
+
 #include "Character.h"
 #include "XML.h"
 
@@ -9,7 +11,6 @@ public:
 	CharacterPool() = default;
 	~CharacterPool() {
 		for (auto& pair : character_pool) {
-			delete pair.second;  // 释放每个IMAGE对象
 			pair.second = nullptr;
 		}
 		character_pool.clear();
@@ -21,21 +22,20 @@ public:
 		}
 
 		std::string path = "script/Character/" + name + ".xml";
-		CharacterTemplate* ch = new CharacterTemplate();
-
-		xml.loadXML(path, ch);
-		character_pool[name] = ch;
+		std::unique_ptr<CharacterTemplate> ch = std::make_unique<CharacterTemplate>();
+		xml.loadXML(path, ch.get());
+		character_pool[name] = std::move(ch);
 	}
 
 	CharacterTemplate* get(const std::string& name) {
 		auto it = character_pool.find(name);
 		if (it != character_pool.end()) {
-			return it->second;
+			return it->second.get();
 		}
 		return nullptr; // 明确返回空指针
 	}
 
 private:
-	std::unordered_map<std::string, CharacterTemplate*> character_pool;
+	std::unordered_map<std::string, std::unique_ptr<CharacterTemplate>> character_pool;
 	CharacterXML xml;
 };

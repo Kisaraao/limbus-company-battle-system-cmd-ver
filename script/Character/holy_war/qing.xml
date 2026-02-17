@@ -1,0 +1,182 @@
+<Character>
+    <!-- 名称 -->
+    <Name val="清"/>
+    <!-- 特性关键词 -->
+    <Tag val="INDEX"/>
+    <Tag val="界"/>
+    <!-- 等级 -->
+    <Level val="70"/>
+    <!-- 血量上下限与开局血量 -->
+    <Health Min="0" Max="2500"></Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-45" Max="45">5</Sanity>
+    <!-- 速度上下限 -->
+    <Speed Min="2" Max="6"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="1.25"/>
+    <Resist name="穿刺" val="1.0"/>
+    <Resist name="打击" val="1.0"/>
+    <!-- 混乱阈值 -->
+    <Confusion val="0.67"/>
+
+    <!-- 技能 -->
+    <Skill type="attack">
+        <Count val="15"/>
+        <Name val="三击"/>
+        <Type attack="斩击" sin="忧郁"/>
+        <Attack_Level val="-5"/>
+        <Base val="2"/>
+        <Change val="3"/>
+        <Using>
+            <Effect target="self" type="breath" x="1"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="damage_enhance" x="1"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="2"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Effect target="self" type="breath" x="2"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" x="2"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" y="2"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="15"/>
+        <Name val="二连斩"/>
+        <Type attack="斩击" sin="傲慢"/>
+        <Attack_Level val="-5"/>
+        <Base val="4"/>
+        <Change val="3"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="strong" x="1"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="weak" x="1"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Effect target="self" type="breath" y="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="3"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="4"/>
+        <Name val="界解"/>
+        <Type attack="斩击" sin="忧郁"/>
+        <Attack_Level val="-4"/>
+        <Base val="7"/>
+        <Change val="7"/>
+        <Using>
+            <Effect target="self" type="breath" y="1"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="strong" x="1"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="damage_weak" x="2"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="3"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="3"/>
+        <Name val="碎斩"/>
+        <Type attack="斩击" sin="傲慢"/>
+        <Attack_Level val="-5"/>
+        <Base val="5"/>
+        <Change val="3"/>
+        <Using>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="damage_enhance" x="4"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="damage_weak" x="2"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Effect target="self" type="breath" x="3"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" y="3"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" x="3"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="breath" y="3"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="2"/>
+        <Name val="空间斩-清"/>
+        <Type attack="斩击" sin="忧郁"/>
+        <Attack_Level val="-4"/>
+        <Base val="10"/>
+        <Change val="11"/>
+        <Using>
+            <Effect target="self" type="breath" x="5"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="damage_enhance" x="5"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="damage_weak" x="4"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="4"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="1"/>
+        <Name val="空间斩-界"/>
+        <Type attack="斩击" sin="忧郁"/>
+        <Attack_Level val="0"/>
+        <Base val="20"/>
+        <Change val="20"/>
+        <Using>
+            <Effect target="self" type="breath" x="5"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="damage_enhance" x="10"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="weak" x="5"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="breath" y="4"/>
+        </Coin>
+    </Skill>
+
+</Character>

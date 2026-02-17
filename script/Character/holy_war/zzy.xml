@@ -1,0 +1,319 @@
+<Character>
+    <!-- 名称 -->
+    <Name val="张志煜"/>
+    <!-- 特性关键词 -->
+    <Tag val="2022年32班"/>
+    <Tag val="前-集训队:移动应用开发"/>
+    <Tag val="绽放E.G.O"/>
+    <!-- 等级 -->
+    <Level val="85"/>
+    <!-- 血量上下限与开局血量 -->
+    <Health Min="0" Max="4000"></Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-15" Max="45">45</Sanity>
+    <!-- 速度上下限 -->
+    <Speed Min="5" Max="8"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="1.3"/>
+    <Resist name="穿刺" val="0.9"/>
+    <Resist name="打击" val="0.9"/>
+    <!-- 混乱阈值 -->
+    <Confusion val="0.4"/>
+
+    <!-- 技能 -->
+    <Skill type="attack">
+        <Count val="8"/>
+        <Name val="灰烬，染血"/>
+        <Type attack="斩击" sin="暴怒"/>
+        <Attack_Level val="4"/>
+        <Base val="4"/>
+        <Change val="5"/>
+        <Using>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Lose>
+                <Effect target="self" type="sanity" x="3"/>
+                <Effect target="self" type="protect" x="1"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="burn" y="2"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+            <Effect target="enemy" type="bleed" y="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="sanity" x="3"/>
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="tremor" y="2"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+            <Effect target="enemy" type="bleed" y="2"/>
+            <Effect type="reroll" y="1"/>
+            <Effect target="enemy" type="weak" x="1"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="13"/>
+        <Name val="集训流快斩"/>
+        <Type attack="斩击" sin="暴怒"/>
+        <Attack_Level val="4"/>
+        <Base val="4"/>
+        <Change val="6"/>
+        <Using>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Lose>
+                <Effect target="self" type="sanity" x="3"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" y="2"/>
+            <Effect target="enemy" type="burn" y="2"/>
+            <Effect target="enemy" type="bleed" y="2"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="attack_level_up" x="1"/>
+            <Effect target="enemy" type="tremor" y="3"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="6"/>
+        <Name val="天皇"/>
+        <Type attack="穿刺" sin="暴怒"/>
+        <Attack_Level val="4"/>
+        <Base val="8"/>
+        <Change val="5"/>
+        <Using>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Lose>
+                <Effect target="self" type="sanity" x="3"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="2"/>
+            <Effect target="enemy" type="tremor" y="2"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="2"/>
+            <Effect target="enemy" type="tremor" y="2"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="2"/>
+            <Effect target="enemy" type="tremor" y="2"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="4"/>
+        <Name val="彼列之眼:永恒"/>
+        <Type attack="打击" sin="忧郁"/>
+        <Attack_Level val="5"/>
+        <Base val="15"/>
+        <Change val="15"/>
+        <Using>
+            <Effect target="self" type="damage_enhance" x="1"/>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Effect target="self" type="strong" x="1"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="5"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="bleed" x="5"/>
+            <Effect target="enemy" type="burn" x="5"/>
+            <Effect target="enemy" type="bleed" y="5"/>
+            <Effect target="enemy" type="burn" y="5"/>
+            <Effect target="enemy" type="attack_level_down" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="bleed" y="3"/>
+            <Effect target="enemy" type="burn" y="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <After content="……一清二楚。"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="2"/>
+        <Name val="洗礼"/>
+        <Type attack="穿刺" sin="暴怒"/>
+        <Attack_Level val="6"/>
+        <Base val="10"/>
+        <Change val="6"/>
+        <Using>
+            <Effect target="self" type="breath" x="2"/>
+        </Using>
+        <Combat>
+            <Lose>
+                <Effect target="self" type="sanity" x="3"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <After content="或许正因为我是恶魔……"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="2"/>
+        <Name val="殉道"/>
+        <Type attack="穿刺" sin="色欲"/>
+        <Attack_Level val="7"/>
+        <Base val="10"/>
+        <Change val="10"/>
+        <Using>
+            <Effect target="self" type="breath" x="5" y="10"/>
+            <Effect target="self" type="damage_enhance" x="2"/>
+        </Using>
+        <Combat>
+            <Lose>
+                <Effect target="self" type="sanity" x="3"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Before content="于是便要猎杀天使。"/>
+            <Effect target="enemy" type="tremor" x="3"/>
+            <Effect target="enemy" type="burn" x="3"/>
+            <Effect target="enemy" type="bleed" x="3"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="attack_level_down" x="1"/>
+            <Effect target="enemy" type="weak" x="1"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="2"/>
+        <Name val="“无情，它叫你无所适从。”"/>
+        <Type attack="斩击" sin="嫉妒"/>
+        <Attack_Level val="8"/>
+        <Base val="16"/>
+        <Change val="5"/>
+        <Using>
+            <Effect target="self" type="breath" x="10" y="10"/>
+            <Effect target="self" type="strong" x="2"/>
+            <Effect target="self" type="damage_enhance" x="3"/>
+        </Using>
+        <Combat>
+            <Lose>
+                <Effect target="self" type="sanity" x="5"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="4"/>
+            <Effect target="enemy" type="burn" x="4"/>
+            <Effect target="enemy" type="bleed" x="4"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="4"/>
+            <Effect target="enemy" type="burn" x="4"/>
+            <Effect target="enemy" type="bleed" x="4"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="4"/>
+            <Effect target="enemy" type="burn" x="4"/>
+            <Effect target="enemy" type="bleed" x="4"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="4"/>
+            <Effect target="enemy" type="burn" x="4"/>
+            <Effect target="enemy" type="bleed" x="4"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Before content="……死亡。"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="1"/>
+        <Name val="“弦鳕……你不能这么躺在地板上。”"/>
+        <Type attack="穿刺" sin="暴怒"/>
+        <Attack_Level val="10"/>
+        <Base val="35"/>
+        <Change val="35"/>
+        <Combat>
+            <Win>
+                <Effect target="self" type="sanity" x="10"/>
+                <Effect target="self" type="breath" x="20"/>
+                <Effect target="self" type="strong" x="8"/>
+                <Effect target="self" type="damage_enhance" x="8"/>
+            </Win>
+            <Lose>
+                <Effect target="self" type="sanity" x="15"/>
+            </Lose>
+        </Combat>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="12" y="6"/>
+            <Effect target="enemy" type="burn" x="12" y="6"/>
+            <Effect target="enemy" type="bleed" x="12" y="6"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="enemy" type="tremor" x="12" y="6"/>
+            <Effect target="enemy" type="burn" x="12" y="6"/>
+            <Effect target="enemy" type="bleed" x="12" y="6"/>
+            <Effect target="enemy" type="burn-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+            <Effect target="enemy" type="tremor-explode"/>
+        </Coin>
+    </Skill>
+
+</Character>
