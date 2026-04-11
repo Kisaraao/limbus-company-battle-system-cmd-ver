@@ -1,24 +1,9 @@
 <Leader>
-    <!-- 考虑替换为 c++17 filesystem读取 -->
-    <!-- 原版 -->
-    <Character path="albina"/>
-    <Character path="valencina"/>
-    <!-- 论外 -->
-    <Character path="tang_yi"/>
-    <Character path="wz"/>
-    <Character path="yty"/>
-    <Character path="yhb"/>
-    <Character path="yzr"/>
-    <Character path="zzy"/>
-    <!-- Holy War -->
-    <Character path="holy_war/mad_yhb"/>
-    <Character path="holy_war/zzy"/>
-    <Character path="holy_war/zjc"/>
-    <Character path="holy_war/qing"/>
+    <!-- 我不想考虑替换为 c++17 filesystem读取 -->
     <!-- 测试 -->
-    <Character path="test"/>
+    <Character path="../Example"/>
     <Battle>
-        <Player name="yty" slots="1"/>
-        <Enemy name="holy_war/zjc" slots="1"/>
+        <Player name="../Example" slots="1"/>
+        <Enemy name="../Example" slots="1"/>
     </Battle>
 </Leader>

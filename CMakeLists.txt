@@ -10,11 +10,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 自动收集所有源文件（.cpp 和 .h）
 # 警告：file(GLOB) 在大型项目中可能不推荐，但对你现在够用
-file(GLOB SOURCES "*.cpp" "*.h")
+# file(GLOB SOURCES "*.cpp" "*.h")
 # file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")  # 如果你有子文件夹
 
+add_subdirectory(source)
+
 # 生成可执行文件
-add_executable(Result ${SOURCES})
+# add_executable(Result ${SOURCES})
 
 # 如果有外部库（比如 pugiXML、SDL），需要链接
 # 假设 pugiXML 的 .cpp 和 .h 就在项目里，直接包含即可，无需额外链接

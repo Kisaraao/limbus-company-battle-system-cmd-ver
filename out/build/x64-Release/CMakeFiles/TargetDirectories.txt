@@ -1,3 +1,0 @@
-C:/Users/Administrator/Desktop/Code/CPP/limbus-company-battle-system-cmd-ver/out/build/x64-Release/CMakeFiles/Result.dir
-C:/Users/Administrator/Desktop/Code/CPP/limbus-company-battle-system-cmd-ver/out/build/x64-Release/CMakeFiles/edit_cache.dir
-C:/Users/Administrator/Desktop/Code/CPP/limbus-company-battle-system-cmd-ver/out/build/x64-Release/CMakeFiles/rebuild_cache.dir

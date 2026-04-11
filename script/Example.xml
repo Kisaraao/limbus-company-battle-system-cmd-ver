@@ -1,0 +1,108 @@
+<Character>
+    <!-- 名称 -->
+    <Name val="超级测试角色"/>
+    <!-- 特性关键词 -->
+    <Tag val="测试Tag-1"/>
+    <Tag val="测试Tag-2"/>
+    <Tag val="测试Tag-3"/>
+    <!-- 等级 -->
+    <Level val="100"/>
+    <!-- 血量上下限与开局血量 -->
+    <Health Min="0" Max="114514">114510</Health>
+    <!-- 理智上下限与开局理智 -->
+    <Sanity Min="-45" Max="45">45</Sanity>
+    <!-- 速度上下限 -->
+    <Speed Min="1" Max="10"/>
+    <!-- 抗性 -->
+    <Resist name="斩击" val="0.5"/>
+    <Resist name="穿刺" val="1.0"/>
+    <Resist name="打击" val="2.0"/>
+    <!-- 混乱阈值 -->
+    <Confusion val="0.75"/>
+    <Confusion val="0.5"/>
+    <Confusion val="0.25"/>
+    <!-- 充能客制化 -->
+    <CustomCharge enable="true" name="测试客制化充能名称" color="20" double_count="false"/>
+    <!-- 开局自带特效 -->
+    <OnGameStart>
+        <Effect target="self" type="charge" x="50"/>
+    </OnGameStart>
+
+    <!-- 技能 -->
+    <Skill type="attack">
+        <Count val="1"/>
+        <Name val="测试技能"/>
+        <Type attack="斩击" sin="暴怒"/>
+        <Attack_Level val="10"/>
+        <Base val="35"/>
+        <Change val="10"/>
+        <Using>
+            <Change notice="true" effect="charge" target="self" mode="greater_or_equal" vec="x" value="70" skill="1"/>
+            <Enhance notice="true" compare_target="self" compare_effect="charge" mode="less_or_equal" compare_vec="x" compare_value="99" 
+                     enhance_effect="charge" enhance_vec="x" enhance_value="20"
+                     has_cost="true" cost_effect="health" cost_vec="x" cost_value="-100"
+            />
+            <Speak content="Using Speak"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Speak content="Combat Win Speak"/>
+                <Effect target="self" type="strong" x="10"/>
+                <Effect target="self" type="damage_enhance" x="10"/>
+                <Effect target="self" type="attack_level_up" x="10"/>
+                <Effect target="self" type="protect" x="10"/>
+            </Win>
+            <Lose>
+                <Speak content="Combat Lose Speak"/>
+                <Effect target="self" type="weak" x="10"/>
+                <Effect target="self" type="damage_weak" x="10"/>
+                <Effect target="self" type="attack_level_down" x="10"/>
+                <Effect target="self" type="fragile" x="10"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Effect target="self" type="burn" x="99" y="99"/>
+            <Effect target="self" type="bleed" x="99" y="99"/>
+            <Effect target="self" type="rupture" x="99" y="99"/>
+            <Effect target="self" type="tremor" x="99" y="99"/>
+            <Effect target="self" type="sink" x="99" y="99"/>
+            <Effect target="self" type="breath" x="99" y="99"/>
+            <Effect target="self" type="charge" x="99" y="99"/>
+        </Coin>
+        <Coin>
+            <Effect target="self" type="burn-explode"/>
+            <Effect target="self" type="bleed-explode"/>
+            <Effect target="self" type="rupture-explode"/>
+            <Effect target="self" type="tremor-explode"/>
+            <Effect target="self" type="sink-explode"/>
+        </Coin>
+        <Coin type="Unbreakable">
+            <Effect target="self" type="reroll" y="1"/>
+        </Coin>
+    </Skill>
+
+    <Skill type="attack">
+        <Count val="0"/>
+        <Name val="强化测试技能"/>
+        <Type attack="打击" sin="嫉妒"/>
+        <Attack_Level val="10"/>
+        <Base val="100"/>
+        <Change val="-80"/>
+        <Using>
+            <Speak content="Enhanced Using Speak"/>
+        </Using>
+        <Combat>
+            <Win>
+                <Speak content="Enhanced Combat Win Speak"/>
+            </Win>
+            <Lose>
+                <Speak content="Enhanced Combat Lose Speak"/>
+            </Lose>
+        </Combat>
+        <Coin>
+            <Before content="Coin Before Speak"/>
+            <After content="Coin After Speak"/>
+        </Coin>
+    </Skill>
+
+</Character>
